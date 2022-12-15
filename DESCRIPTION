@@ -8,5 +8,8 @@ Description: What the package does (one paragraph).
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
+Imports:
+  mice,
+  mitools
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.2
