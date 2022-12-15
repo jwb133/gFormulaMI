@@ -1,3 +1,4 @@
+#timePoints - number of follow-up timepoints (not including baseline)
 #trtRegime - list of regimes of interest, but in first interest one regime
 
 
@@ -21,18 +22,17 @@ gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegime,
 
   #create new variable which in the end will indicate which treatment regime
   #the row corresponds to
-  data$regime <- 0
+  data$regime <- as.factor(0)
 
   #create blank dataset with treatment indicators set as per desired regime
   syntheticDataBlank <- data
   #set everything to missing
   syntheticDataBlank[,] <- NA
-  syntheticDataBlank$regime <- NA
-  #set treatment variables according to specified regime
   #create vector of treatment variables
   trtVarNames <- paste0(trtVarStem,0:timePoints)
+  syntheticDataBlank$regime <- as.factor(1)
   for (i in 1:(timePoints+1)) {
-    syntheticDataBlank$regime[1:n] <- 1
+    #set treatment indicator according to specified regime
     syntheticDataBlank[1:n,trtVarNames[i]] <- 0
   }
 
@@ -69,30 +69,29 @@ gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegime,
     }
   }
 
-  imputations <- list()
-  for (i in 1:M) {
-    imputations[[i]] <- mice::complete(imps, action=i)
-  }
-  #return imputations as an object created by imputationList from mitools
-  mitools::imputationList(imputations)
+  #remove original data from imputations
+  imps <- mice::complete(data=imps,action="long",include=TRUE)
+  imps <- imps[imps$regime!=0,]
+  #turn back into a mids object
+  imps <- mice::as.mids(imps)
 }
-
-gFormulaAnalyse <- function(imps,analysis) {
-
-  M <- max(imps$.imp)
-  fit <- do.call(what=analysis, argswith(imps[imps$.imp==1,], expr=analysis)
-  p <- length(coef(fit))
-  ests <- array(0, dim=c(M,p))
-  within_vars <- array(0, dim=c(M,p))
-
-  for (i in 1:M) {
-      fit <- with(imps[imps$.imp==i,], expr=analysis)
-      ests[i,] <- coef(fit)
-      within_vars[i,] <- diag(vcov(fit))
-  }
-
-  v <- colMeans(within_vars)
-  b <- var(ests)
-  total_var <- (1+1/M)*b - v
-  print(total_var)
-}
+#
+# gFormulaAnalyse <- function(imps,analysis) {
+#
+#   M <- max(imps$.imp)
+#   fit <- do.call(what=analysis, argswith(imps[imps$.imp==1,], expr=analysis)
+#   p <- length(coef(fit))
+#   ests <- array(0, dim=c(M,p))
+#   within_vars <- array(0, dim=c(M,p))
+#
+#   for (i in 1:M) {
+#       fit <- with(imps[imps$.imp==i,], expr=analysis)
+#       ests[i,] <- coef(fit)
+#       within_vars[i,] <- diag(vcov(fit))
+#   }
+#
+#   v <- colMeans(within_vars)
+#   b <- var(ests)
+#   total_var <- (1+1/M)*b - v
+#   print(total_var)
+# }
