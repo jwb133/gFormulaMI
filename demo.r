@@ -15,6 +15,14 @@ obsData <- data.frame(l0=l0,a0=a0,l1=l1,a1=a1,l2=l2,a2=a2,y=y)
 
 rm(l0,a0,l1,a1,l2,a2,y)
 
-imps <- gFormulaImpute(obsData,M=50,trtVarStem="a",timePoints=2,trtRegime=c(0,0,0))
+imps <- gFormulaImpute(obsData,M=50,trtVarStem="a",timePoints=3,trtRegimes=c(0,0,0))
 
-fit <- with(imps, lm(y[regime!=0]~l0[regime!=0]))
+fit <- with(imps, lm(y~1))
+pool(fit)
+gFormulaAnalyse(fit)
+
+imps <- gFormulaImpute(obsData,M=50,trtVarStem="a",timePoints=3,
+                       trtRegimes=list(c(0,0,0), c(1,1,1)))
+fit <- with(imps, lm(y~regime))
+pool(fit)
+gFormulaAnalyse(fit)
