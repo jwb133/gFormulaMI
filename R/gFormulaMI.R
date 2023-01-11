@@ -48,9 +48,12 @@ gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
   } else if (class(data)=="data.frame")  {
     missingData <- FALSE
     print("Input data is a regular data frame.")
+    #check there are no missing values
+    if (sum(is.na(data))>0) {
+      stop("Missing values detected - please multiply impute these and pass a mids type object as input.")
+    }
   } else {
-    print("Input dataset should either be a data frame or a mids object created by mice.")
-    stop()
+    stop("Input dataset should either be a data frame or a mids object created by mice.")
   }
 
   if (typeof(trtRegimes)=="list") {
@@ -93,7 +96,7 @@ gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
       }
     }
   }
-  #set up predictor matrix for mice
+  #set up predictor matrix for mice, exploiting monotone pattern
   predMat <- mice::make.predictorMatrix(data)
   predMat[,] <- lower.tri(predMat)
 
@@ -133,7 +136,7 @@ gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
   imps <- suppressWarnings(mice::as.mids(imps))
 }
 
-#' Analyse a set of gFormula synthetic imputed datasets
+#' Analyse a set of gFormulaMI synthetic imputed datasets
 #'
 #' @param fits Collection of model fits produced by a call of the form with(imps, lm(y~regime))
 #'

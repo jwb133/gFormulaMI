@@ -2,7 +2,7 @@
 % Please edit documentation in R/gFormulaMI.R
 \name{gFormulaAnalyse}
 \alias{gFormulaAnalyse}
-\title{Analyse a set of gFormula synthetic imputed datasets}
+\title{Analyse a set of gFormulaMI synthetic imputed datasets}
 \usage{
 gFormulaAnalyse(fits)
 }
@@ -10,5 +10,5 @@ gFormulaAnalyse(fits)
 \item{fits}{Collection of model fits produced by a call of the form with(imps, lm(y~regime))}
 }
 \description{
-Analyse a set of gFormula synthetic imputed datasets
+Analyse a set of gFormulaMI synthetic imputed datasets
 }
