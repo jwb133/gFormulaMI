@@ -1,4 +1,4 @@
-#basic simulated dataset
+#simulated dataset with no missing data
 n <- 500
 set.seed(712345)
 

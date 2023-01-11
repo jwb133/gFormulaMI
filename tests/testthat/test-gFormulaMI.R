@@ -19,7 +19,7 @@ test_that("Check 95% confidence interval includes true value, one regime", {
 test_that("gFormulaImpute runs with two regimes", {
   expect_error({
     impRes <- gFormulaImpute(data=simDataFullyObs,M=50,trtVarStem="a",timePoints=2,
-                             trtRegime=list(c(0,0),c(1,1)))
+                             trtRegimes=list(c(0,0),c(1,1)))
     fits <- with(impRes, lm(y~factor(regime)))
     gFormulaAnalyse(fits)
   }, NA)
@@ -28,7 +28,7 @@ test_that("gFormulaImpute runs with two regimes", {
 test_that("Check 95% confidence interval includes true value, two regimes", {
   expect_equal({
     impRes <- gFormulaImpute(data=simDataFullyObs,M=50,trtVarStem="a",timePoints=2,
-                             trtRegime=list(c(0,0),c(1,1)))
+                             trtRegimes=list(c(0,0),c(1,1)))
     fits <- with(impRes, lm(y~factor(regime)))
     res <- gFormulaAnalyse(fits)
     #true mean of regime 1 is 3, and true mean of regime 0 is 0
@@ -40,6 +40,26 @@ test_that("If passed a regular data frame with missing values, it should error",
   expect_error({
     simDataFullyObs$l1[1:5] <- NA
     impRes <- gFormulaImpute(data=simDataFullyObs,M=50,trtVarStem="a",timePoints=2,
-                             trtRegime=list(c(0,0),c(1,1)))
+                             trtRegimes=list(c(0,0),c(1,1)))
   })
 })
+
+test_that("Synthetic imputation runs when passed a mids object", {
+  expect_error({
+    impRes <- gFormulaImpute(data=simDataMisImps,M=10,trtVarStem="a",timePoints=2,
+                             trtRegime=list(c(0,0),c(1,1)))
+  },NA)
+})
+
+test_that("Check 95% confidence interval includes true value,
+          two regimes, missing data imputations as input", {
+  expect_equal({
+    impRes <- gFormulaImpute(data=simDataMisImps,M=10,trtVarStem="a",timePoints=2,
+                             trtRegime=list(c(0,0),c(1,1)))
+    fits <- with(impRes, lm(y~factor(regime)))
+    res <- gFormulaAnalyse(fits)
+    #true mean of regime 1 is 3, and true mean of regime 0 is 0
+    1*((res[2,6]<3) & (res[2,7]>3))
+  }, 1)
+})
+

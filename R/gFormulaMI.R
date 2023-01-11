@@ -45,6 +45,8 @@ gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
   if (class(data)=="mids") {
     missingData <- TRUE
     print("Input data is a mice created multiple imputation object.")
+    print(paste("Number of synthetic imputations to be generated set to",data$m))
+    M <- data$m
   } else if (class(data)=="data.frame")  {
     missingData <- FALSE
     print("Input data is a regular data frame.")
@@ -67,18 +69,31 @@ gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
     }
   }
 
-  n <- nrow(data)
+  if (missingData==TRUE) {
+    firstImp <- mice::complete(data,1)
+    n <- nrow(firstImp)
+  } else {
+    n <- nrow(data)
+  }
+
   if (is.null(nSim)) {
     nSim <- n
   }
 
+  #create blank dataset with treatment indicators set as per desired regime
+  if (missingData==TRUE) {
+    syntheticDataBlank <- data.frame(matrix(NA,nrow=nSim*numRegimes,
+                                            ncol=ncol(firstImp)))
+    colnames(syntheticDataBlank) <- colnames(firstImp)
+  } else {
+    syntheticDataBlank <- data.frame(matrix(NA,nrow=nSim*numRegimes,ncol=ncol(data)))
+    colnames(syntheticDataBlank) <- colnames(data)
+  }
+
   #create new variable which in the end will indicate which treatment regime
   #the row corresponds to
-  data$regime <- as.factor(0)
+  syntheticDataBlank$regime <- as.factor(0)
 
-  #create blank dataset with treatment indicators set as per desired regime
-  syntheticDataBlank <- data.frame(matrix(NA,nrow=nSim*numRegimes,ncol=ncol(data)))
-  colnames(syntheticDataBlank) <- colnames(data)
   #create vector of treatment variables
   trtVarNames <- paste0(trtVarStem,0:(timePoints-1))
 
@@ -96,11 +111,13 @@ gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
       }
     }
   }
+
   #set up predictor matrix for mice, exploiting monotone pattern
-  predMat <- mice::make.predictorMatrix(data)
+  predMat <- mice::make.predictorMatrix(syntheticDataBlank)
   predMat[,] <- lower.tri(predMat)
 
   if (missingData==FALSE) {
+    data$regime <- as.factor(0)
     inputData <- rbind(data,syntheticDataBlank)
     print("Imputing potential outcomes using sequential models.
           Please check variables are ordered in time as desired!")
@@ -109,31 +126,53 @@ gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
                defaultMethod = c("norm", "logreg", "polyreg","polr"),
                predictorMatrix = predMat,m=M,maxit=1,
                printFlag = micePrintFlag)
+
+    #remove original data from imputations
+    imps <- mice::complete(data=imps,action="long",include=TRUE)
+    imps <- imps[imps$regime!=0,]
+    #turn back into a mids object
+    imps <- suppressWarnings(mice::as.mids(imps))
+
   } else {
 
-    #now impute potential outcomes
-    imputedDatasets <- vector(mode = "list", length = M)
+    #create empty 'long' dataframe that will store all the imputations
+    imputedDatasetsLong <- data.frame(matrix(NA,nrow=M*nSim*numRegimes,
+                      ncol=ncol(firstImp)))
+    imputedDatasetsLong$regime <- factor(NA, levels=c("1","2"))
+    colnames(imputedDatasetsLong) <- colnames(syntheticDataBlank)
+    imputedDatasetsLong$.imp <- rep(1:M,each=nSim*numRegimes)
+    imputedDatasetsLong$.id <- rep(1:(nSim*numRegimes), times=M)
     for (i in 1:M) {
       #impute data in synthetic part using mice, with m=1
-      inputData <- rbind(complete(intermediateImps,action=i),
-                         syntheticDataBlank)
+      inputData <- mice::complete(data, action=i)
+      inputData$regime <- as.factor(0)
+      inputData <- rbind(inputData,syntheticDataBlank)
 
-      imps <- mice(data=inputData,
+      imps <- mice::mice(data=inputData,
                    defaultMethod = c("norm", "logreg", "polyreg","polr"),
                    predictorMatrix = predMat,m=1,maxit=1,
                    printFlag = FALSE)
 
-      imputedDatasets[[i]] <- complete(imps, action=1)
-      #extract just the synthetic part
-      imputedDatasets[[i]] <- imputedDatasets[[i]][(n+1):(3*n),]
+      #prepare single imputation for copying to imputeDatasetsLong
+      imputedDataset <- mice::complete(imps,action=1)
+      #remove original data (regime=0)
+      imputedDataset <- imputedDataset[imputedDataset$regime!=0,]
+      imputedDataset$regime <- droplevels(imputedDataset$regime)
+      #copy single imputation into long dataframe
+      imputedDatasetsLong[((i-1)*(nSim*numRegimes)+1):(i*(nSim*numRegimes)),1:ncol(inputData)] <- imputedDataset
     }
-  }
 
-  #remove original data from imputations
-  imps <- mice::complete(data=imps,action="long",include=TRUE)
-  imps <- imps[imps$regime!=0,]
-  #turn back into a mids object
-  imps <- suppressWarnings(mice::as.mids(imps))
+    #put 'original' data at top
+    imputedDatasetsLong <- rbind(cbind(syntheticDataBlank,.imp=0,.id=1:(nSim*numRegimes)),
+                                 imputedDatasetsLong)
+    #turn back into a mids object
+    imps <- suppressWarnings(mice::as.mids(imputedDatasetsLong))
+
+  }
+  #return the imputations
+  imps
+
+
 }
 
 #' Analyse a set of gFormulaMI synthetic imputed datasets
