@@ -11,7 +11,9 @@ gFormulaImpute(
   timePoints,
   trtRegimes,
   nSim = NULL,
-  micePrintFlag = FALSE
+  micePrintFlag = FALSE,
+  method = NULL,
+  predictorMatrix = NULL
 )
 }
 \arguments{
@@ -31,6 +33,15 @@ number of individuals in observed data}
 
 \item{micePrintFlag}{TRUE/FALSE specifying whether the output from the call to mice
 should be printed}
+
+\item{method}{An optional method argument to pass to mice. If not specified, the default
+is to impute continuous variables using normal linear regression (norm), binary variables using
+logistic regression (logreg), polytomous regression for unordered factors and
+proportional odds model for ordered factors}
+
+\item{predictorMatrix}{An optional predictor matrix to specify which variables to use
+as predictors in the imputation models. The default is to impute sequentially, i.e. impute
+using all variables to the left of the variable being imputed as covariates}
 }
 \value{
 an S3 object of class mids (multiply imputed dataset)
@@ -53,7 +64,9 @@ sequentially from left to right in the data frame. As such, the variables must b
 in time in the input data frame, with the time-varying confounders at each time followed
 by the corresponding treatment variable at that time.
 
-Missing data
+For the data argument, \code{gFormulaImpute} expects either a fully observed (complete) data frame,
+or else a set of multiple imputation stored in an object of class mids, created by mice
+in the mice package.
 
 \code{gFormulaImpute} returns an object of class \code{mids}. This can be analysed using the same
 methods that imputed datasets from \code{mice} can be analysed with. However, Rubin's standard

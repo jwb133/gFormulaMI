@@ -1,5 +1,5 @@
 #simulated dataset with no missing data
-n <- 500
+n <- 5000
 set.seed(712345)
 
 expit <- function(x) exp(x)/(1+exp(x))

@@ -16,7 +16,9 @@
 #' in time in the input data frame, with the time-varying confounders at each time followed
 #' by the corresponding treatment variable at that time.
 #'
-#' Missing data
+#' For the data argument, `gFormulaImpute` expects either a fully observed (complete) data frame,
+#' or else a set of multiple imputation stored in an object of class mids, created by mice
+#' in the mice package.
 #'
 #' `gFormulaImpute` returns an object of class `mids`. This can be analysed using the same
 #' methods that imputed datasets from `mice` can be analysed with. However, Rubin's standard
@@ -34,19 +36,32 @@
 #' number of individuals in observed data
 #' @param micePrintFlag TRUE/FALSE specifying whether the output from the call to mice
 #' should be printed
+#' @param method An optional method argument to pass to mice. If not specified, the default
+#' is to impute continuous variables using normal linear regression (norm), binary variables using
+#' logistic regression (logreg), polytomous regression for unordered factors and
+#' proportional odds model for ordered factors
+#' @param predictorMatrix An optional predictor matrix to specify which variables to use
+#' as predictors in the imputation models. The default is to impute sequentially, i.e. impute
+#' using all variables to the left of the variable being imputed as covariates
+
 #'
 #' @return an S3 object of class mids (multiply imputed dataset)
 #' @export
 #'
 #' @examples
 gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
-                           nSim=NULL, micePrintFlag=FALSE) {
+                           nSim=NULL, micePrintFlag=FALSE,
+                           method=NULL,predictorMatrix=NULL) {
 
   if (class(data)=="mids") {
     missingData <- TRUE
     print("Input data is a mice created multiple imputation object.")
-    print(paste("Number of synthetic imputations to be generated set to",data$m))
+    if (data$m!=M) {
+      print("Value passed to M being ignored.")
+      print(paste("Number of synthetic imputations to be generated set to",data$m, "as in mids object passed to gFormulaImpute."))
+    }
     M <- data$m
+    firstImp <- mice::complete(data,1)
   } else if (class(data)=="data.frame")  {
     missingData <- FALSE
     print("Input data is a regular data frame.")
@@ -69,8 +84,20 @@ gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
     }
   }
 
+  #check treatment variables are as expected in the data frame
+  #expected treatment variables are:
+  trtVarNames <- paste0(trtVarStem,0:(timePoints-1))
+  #variables with trtVarStem as stem are:
+  if (missingData==FALSE) {
+    varsWithStem <- colnames(data)[grepl(trtVarStem,colnames(data))]
+  } else {
+    varsWithStem <- colnames(firstImp)[grepl(trtVarStem,colnames(firstImp))]
+  }
+  if (identical(trtVarNames,varsWithStem)==FALSE) {
+    stop("Mismatch between treatment variables in data frame and those expected.")
+  }
+
   if (missingData==TRUE) {
-    firstImp <- mice::complete(data,1)
     n <- nrow(firstImp)
   } else {
     n <- nrow(data)
@@ -94,9 +121,6 @@ gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
   #the row corresponds to
   syntheticDataBlank$regime <- as.factor(0)
 
-  #create vector of treatment variables
-  trtVarNames <- paste0(trtVarStem,0:(timePoints-1))
-
   if (numRegimes==1) {
     syntheticDataBlank$regime <- as.factor(1)
     for (i in 1:timePoints) {
@@ -119,19 +143,41 @@ gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
   if (missingData==FALSE) {
     data$regime <- as.factor(0)
     inputData <- rbind(data,syntheticDataBlank)
-    print("Imputing potential outcomes using sequential models.
-          Please check variables are ordered in time as desired!")
+
+    if (is.null(method)) {
+      method <- mice::make.method(data=inputData,defaultMethod = c("norm", "logreg", "polyreg","polr"))
+    } else {
+      #add on an empty imputation method for the new variable regime
+      method <- c(method,"")
+    }
+
+    if (is.null(predictorMatrix)) {
+      predictorMatrix <- predMat
+    } else {
+      #need to append user provided predictor matrix with extra row and column
+      #corresponding to new variable regime
+      predMat[1:nrow(predictorMatrix),1:ncol(predictorMatrix)] <- predictorMatrix
+      predictorMatrix <- predMat
+    }
 
     imps <- mice::mice(data=inputData,
-               defaultMethod = c("norm", "logreg", "polyreg","polr"),
-               predictorMatrix = predMat,m=M,maxit=1,
+               method=method,
+               predictorMatrix = predictorMatrix,m=M,maxit=1,
                printFlag = micePrintFlag)
 
+    print("Variables imputed using:")
+    print(imps$method)
+    print("Predictor matrix is set to:")
+    print(imps$predictorMatrix)
+
     #remove original data from imputations
-    imps <- mice::complete(data=imps,action="long",include=TRUE)
-    imps <- imps[imps$regime!=0,]
+    returnImps <- mice::complete(data=imps,action="long",include=TRUE)
+    returnImps <- returnImps[returnImps$regime!=0,]
     #turn back into a mids object
-    imps <- suppressWarnings(mice::as.mids(imps))
+    returnImps <- suppressWarnings(mice::as.mids(returnImps))
+    #copy over predictor matrix  used into imps
+    returnImps$predictorMatrix <- predMat
+    returnImps$method <- imps$method
 
   } else {
 
@@ -142,16 +188,41 @@ gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
     colnames(imputedDatasetsLong) <- colnames(syntheticDataBlank)
     imputedDatasetsLong$.imp <- rep(1:M,each=nSim*numRegimes)
     imputedDatasetsLong$.id <- rep(1:(nSim*numRegimes), times=M)
+
     for (i in 1:M) {
       #impute data in synthetic part using mice, with m=1
       inputData <- mice::complete(data, action=i)
       inputData$regime <- as.factor(0)
       inputData <- rbind(inputData,syntheticDataBlank)
 
+      if (i==1) {
+        if (is.null(method)) {
+          method <- mice::make.method(data=inputData,defaultMethod = c("norm", "logreg", "polyreg","polr"))
+        } else {
+          #add on an empty imputation method for the new variable regime
+          method <- c(method,"")
+        }
+        if (is.null(predictorMatrix)) {
+          predictorMatrix <- predMat
+        } else {
+          #need to append user provided predictor matrix with extra row and column
+          #corresponding to new variable regime
+          predMat[1:nrow(predictorMatrix),1:ncol(predictorMatrix)] <- predictorMatrix
+          predictorMatrix <- predMat
+        }
+      }
+
       imps <- mice::mice(data=inputData,
-                   defaultMethod = c("norm", "logreg", "polyreg","polr"),
-                   predictorMatrix = predMat,m=1,maxit=1,
+                   method=method,
+                   predictorMatrix = predictorMatrix,m=1,maxit=1,
                    printFlag = FALSE)
+
+      if (i==1) {
+        print("Variables imputed using:")
+        print(imps$method)
+        print("Predictor matrix is set to:")
+        print(imps$predictorMatrix)
+      }
 
       #prepare single imputation for copying to imputeDatasetsLong
       imputedDataset <- mice::complete(imps,action=1)
@@ -165,12 +236,16 @@ gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
     #put 'original' data at top
     imputedDatasetsLong <- rbind(cbind(syntheticDataBlank,.imp=0,.id=1:(nSim*numRegimes)),
                                  imputedDatasetsLong)
+
     #turn back into a mids object
-    imps <- suppressWarnings(mice::as.mids(imputedDatasetsLong))
+    returnImps <- mice::as.mids(imputedDatasetsLong)
+    #copy over predictor matrix  used into imps
+    returnImps$predictorMatrix <- predMat
+    returnImps$method <- imps$method
 
   }
   #return the imputations
-  imps
+  returnImps
 
 
 }

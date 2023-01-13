@@ -7,7 +7,7 @@
 \format{
 \subsection{\code{simDataFullyObs}}{
 
-A data frame with 500 rows and the following variables:
+A data frame with 5000 rows and the following variables:
 \describe{
 \item{l0}{Continuous baseline confounder}
 \item{a0}{Binary baseline treatment}
