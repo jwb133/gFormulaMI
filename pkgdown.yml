@@ -1,0 +1,10 @@
+pandoc: 2.19.2
+pkgdown: 2.0.7
+pkgdown_sha: ~
+articles:
+  gFormulaMI: gFormulaMI.html
+last_built: 2023-01-31T14:31Z
+urls:
+  reference: https://jwb133.github.io/gFormulaMI/reference
+  article: https://jwb133.github.io/gFormulaMI/articles
+
