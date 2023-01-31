@@ -160,16 +160,21 @@ when calling the <code>mice</code> imputation function. This shows, in a
 given row, which other variables (indicated by a 1) will be used as
 covariates in the imputation model for the variable labelled in that
 row. Thus here, <code>l1</code> is being imputed using <code>l0</code>
-and <code>a0</code>. You will notice that the printed
-<code>predictorMatrix</code> has 1s in the lower diagonal and 0s in the
-upper diagonal. This is because g-formula and hence
-<code>gFormulaImpute</code>, imputes sequentially forwards in time,
-using the past (i.e. to the left) variables as covariates. Because of
-this, the data frame you pass to <code>gFormulaImpute</code> must have
-the variables ordered in time as in the example above, so that the
-correct covariates are used in each model. If you wish to modify the
-predictor matrix used, you can pass a custom one using the
-<code>predictorMatrix</code> argument of
+and <code>a0</code>. For variables which are not being imputed (as
+indicated by an empty entry in the vector of imputation methods
+printed), the corresponding row in the predictor matrix has no effect on
+anything. In particular, the treatment variables <code>a0</code>,
+<code>a1</code> and <code>a2</code> are not being imputed based on a
+regression model.</p>
+<p>You will notice that the printed <code>predictorMatrix</code> has 1s
+in the lower diagonal and 0s in the upper diagonal. This is because
+g-formula and hence <code>gFormulaImpute</code>, imputes sequentially
+forwards in time, using the past (i.e. to the left) variables as
+covariates. Because of this, the data frame you pass to
+<code>gFormulaImpute</code> must have the variables ordered in time as
+in the example above, so that the correct covariates are used in each
+model. If you wish to modify the predictor matrix used, you can pass a
+custom one using the <code>predictorMatrix</code> argument of
 <code>gFormulaImpute</code>.</p>
 <p>Note that unlike in the usual missing data situation, no iteration is
 required when <code>gFormulaImpute</code> calls the <code>mice</code>
