@@ -1,0 +1,118 @@
+---
+title: "gFormulaMI - G-formula for causal inference via multiple imputation"
+output: rmarkdown::html_vignette
+author: "Jonathan Bartlett"
+vignette: >
+  %\VignetteIndexEntry{gFormulaMI}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+In this vignette we introduce the functionality of the `gFormulaMI`. The package implements an approach to constructing a G-formula estimator using multiple imputation methods and software, as described by [Bartlett et al (2023)](https://arxiv.org/abs/2301.12026).
+
+First we use the simulated dataset provided in the package to demonstrate how to impute potential outcomes using `gFormulaImpute`. We then show how the resulting imputed datasets can be analysed using the `syntheticPool` function. Lastly, we illustrate how the functions can be used when the dataset has missing values to begin with (i.e. regular missing data).
+
+# Imputing using `gFormulaImpute`
+
+First, we load the package
+
+```{r setup}
+library(gFormulaMI)
+```
+
+The first few rows of the simulated dataset that ships with the package look like
+```{r}
+head(simDataFullyObs)
+```
+Here the `l` variables correspond to a confounder measured at baseline (`l0`) and two follow-up time points (`l1` and `l2`). The time-varying binary treatment variable is stored in `a0`, `a1` and `a2`. The final outcome variable is `y`.
+
+Next we use `gFormulaImpute` to impute potential outcomes under two treatment regimes of interest. To do this, `gFormulaImpute` uses the `mice` multiple imputation function from the `mice` package. If passed a regular data frame, as here, `gFormulaImpute` expects (and requires) there to be no missing values in the data frame. To run, we have to tell `gFormulaImpute` which variables correspond to the time-varying treatment, the number of time points (here 3) and the treatment regime(s) that we want it to create imputations for:
+
+```{r}
+set.seed(7626)
+#impute synthetic datasets under two regimes of interest
+imps <- gFormulaImpute(data=simDataFullyObs,M=10,trtVarStem="a",
+                        timePoints=3,
+                        trtRegimes=list(c(0,0,0),c(1,1,1)))
+```
+
+Here we have called `gFormulaImpute` requesting 10 imputations to be generated for two regimes of interest, corresponding to no treatment at each time point (0,0,0) and treatment at each time point (1,1,1).
+
+## Imputation model specification
+The printed output above tells us what imputation methods have been used to impute (simulate) the time-varying confounders and outcome. By default, `gFormulaImpute` specifies to impute numeric variables using normal linear regression, which is why here `l0`, `l1`, `l2` and `y` are being imputed using method `norm`. If there had been binary factors as time-varying confounders, these would be imputed using logistic regression. Factor time-varying confounders which are unordered are imputed using polytomous regression and a proportional odds model is used for ordered factors. If you want to modify these defaults, you can pass a `method` vector to `gFormulaImpute`, which specifies which of the imputation methods available in the `mice` package to use when imputing each column of the data frame.
+
+The output also shows the `predictorMatrix` argument used when calling the `mice` imputation function. This shows, in a given row, which other variables (indicated by a 1) will be used as covariates in the imputation model for the variable labelled in that row. Thus here, `l1` is being imputed using `l0` and `a0`. You will notice that the printed `predictorMatrix` has 1s in the lower diagonal and 0s in the upper diagonal. This is because g-formula and hence `gFormulaImpute`, imputes sequentially forwards in time, using the past (i.e. to the left) variables as covariates. Because of this, the data frame you pass to `gFormulaImpute` must have the variables ordered in time as in the example above, so that the correct covariates are used in each model. If you wish to modify the predictor matrix used, you can pass a custom one using the `predictorMatrix` argument of `gFormulaImpute`.
+
+Note that unlike in the usual missing data situation, no iteration is required when `gFormulaImpute` calls the `mice` imputation function, and thus when `gFormulaImpute` calls `mice` it sets its `maxit` argument to 1.
+
+## Number of imputations
+
+In our call above we asked `gFormulaImpute` to create 10 imputations. Later when we analyse the imputations, the special pooling rules we will apply can, with a small number of imputations, produce negative variances for parameter estimates. To avoid this, we recommend using at least 25 imputations in general (we used 10 here for the sake of speed).
+
+## Number of individuals to simulate
+
+In our call above we did not specify the `nSim` argument. This argument specifies how many individuals to simulate longitudinal histories for in each of the synthetic imputed datasets. Since we did not specify a value, the default is to simulate the same number as the number of rows in the data frame passed to `gFormulaImpute` (here 5,000). If more than one treatment regime is specified, `nSim` rows are simulated for each regime.
+
+# Analysing the imputations
+
+`gFormulaImpute` creates a set of synthetic imputed datasets. That is, the imputed datasets created contain imputed (simulated) longitudinal histories based on the fitted models, under the treatment regimes specified. The original rows in the data frame passed to `gFormulaImpute` do not appear in the imputed datasets returned to us. The first few rows of the first imputed dataset are:
+```{r}
+head(mice::complete(imps))
+```
+We see that in the first rows of the first imputed dataset, `a0`, `a1` and `a2` are always zero, because the first treatment regime we specified to impute for was (0,0,0). We also have an additional variable, called `regime`. This factor variable records which of the specified treatment regimes each row corresponds to. Thus here, in the first few rows of the data frame, the regime is 1.
+
+To analyse the imputed datasets we first run our desired analysis of the imputed longitudinal histories. Here we will simply compare the mean of the final outcome variable `y` between the two regimes we have imputed for. To do this, we fit a linear model with `y` as the dependent variable and `regime` as covariate:
+```{r}
+fits <- with(imps, lm(y~factor(regime)))
+```
+
+Because the imputed datasets we have analysed are fully synthetic, we cannot (or rather should not) pool our estimates using Rubin's standard combination rules (e.g. as implemented in `pool` in the `mice` package). Doing so results in variances which are larger than they should be. Instead we use the synthetic imputation combination rules developed by Raghunathan et al (2003), implemented in the `syntheticPool` function:
+```{r}
+syntheticPool(fits)
+```
+Here the intercept corresponds to the mean of `y`  under our first regime (0,0,0). The `factor(regime)2` coefficient corresponds to difference in the mean of `y` between the second regime and the first. Here we see that the second regime has a mean outcome about 3 higher than the first. As well as the point estimate, we see the within, between and total imputation variances. Here we can see that the total variances are less than the between, which never happens with Rubin's regular pooling rules. This is because in the synthetic pooling rules of Raghunthan et al (2003), the total variance is the between minus the within imputation variance (plus a correction for the finite number of imputations performed).
+
+# Datasets with missing values
+
+Often the longitudinal dataset we have has some missing values. In this context, one approach is to use multiple imputation to impute these missing values using imputation software, assuming missing at random. Having imputed these, we can then pass the imputed datasets to `gFormulaImpute` to perform the synthetic imputation step.
+
+To illustrate these steps, let's now create a new dataset from the simulated one, making some values missing:
+```{r}
+simDataMissing <- simDataFullyObs
+simDataMissing$l0[runif(nrow(simDataMissing))<0.2] <- NA
+simDataMissing$l1[runif(nrow(simDataMissing))<0.2] <- NA
+simDataMissing$l2[runif(nrow(simDataMissing))<0.2] <- NA
+simDataMissing$y[runif(nrow(simDataMissing))<0.2] <- NA
+```
+Here we have simply made around 20% of values missing in `l0`, `l1`, `l2` and `y`, completely randomly.
+
+Next, we impute the `simDataMissing` data frame using the `mice` function:
+```{r}
+simDataMissingImps <- mice::mice(simDataMissing,m=10,printFlag=FALSE)
+```
+In a real substantive analysis we should take more care to think about how we specify the imputation models. For more discussion of this point, see [Bartlett et al (2023)](https://arxiv.org/abs/2301.12026). In particular, note that the default behaviour of the `mice` function is to impute numeric variables using the predictive mean matching method, rather than normal linear regression (as in the `gFormulaImpute` function).
+
+We can now pass our multiply imputed datasets to `gFormulaImpute` to create the synthetic imputations as before, but this time let's try and generate 20 synthetic imputated datasets:
+```{r}
+imps2 <- gFormulaImpute(data=simDataMissingImps,M=20,trtVarStem="a",
+                        timePoints=3,
+                        trtRegimes=list(c(0,0,0),c(1,1,1)))
+```
+The output looks much the same as the first time we called `gFormulaImpute`, apart from the first few lines of output. `gFormulaImpute` can see that there are only 10 imputations of the original dataset, and it refuses to generate a different number of imputations to the number in the `mids` multiple imputation dataset object we have passed to it. The `imps2` object thus contains 10 imputations, which can be analysed using `syntheticPool` in the same was as before.
+
+
+# References
+
+Bartlett JW, Olarte Parra C, Daniel RM. G-formula for causal inference
+via multiple imputation. 2023 \url{https://arxiv.org/abs/2301.12026}
+
+Raghunathan TE, Reiter JP, Rubin DB. 2003. Multiple imputation for statistical disclosure limitation. Journal of Official Statistics, 19(1), p.1-16.

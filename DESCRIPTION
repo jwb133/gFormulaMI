@@ -1,12 +1,14 @@
 Package: gFormulaMI
-Title: What the Package Does (One Line, Title Case)
+Title: G-formula for causal inference via multiple imputation
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Jonathan", "Bartlett", , "jonathan.bartlett1@lshtm.ac.uk", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-7117-0195"))
+Description: gFormulaMI implements the G-formula method for causal inference
+  using Bayesian multiple imputation methods. It creates multiple synthetic imputed
+  datasets under treatment regimes of interest. These can then be analysed
+  using rules developed for analysing multiple synthetic datasets.
+License: GPL (>= 3)
 Encoding: UTF-8
 Imports:
   mice,
@@ -14,8 +16,11 @@ Imports:
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Suggests: 
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Depends: 
     R (>= 2.10)
 LazyData: true
+VignetteBuilder: knitr

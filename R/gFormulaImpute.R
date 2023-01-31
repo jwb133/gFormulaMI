@@ -4,11 +4,12 @@
 #' specified treatment regimes of interest, based on the G-formula.
 #'
 #' `gFormulaImpute` creates multiple imputed synthetic datasets of longitudinal histories under
-#' specified treatment regimes of interest, based on the G-formula. Specifically, to
+#' specified treatment regimes of interest, based on the G-formula, as described in
+#' \href{https://arxiv.org/abs/2301.12026}{Bartlett et al 2023}. Specifically, to
 #' the observed data frame, an additional `nSim` rows are added in which all variables are set to
 #' missing, except the time-varying treatment variables. The latter are set to the values
 #' as specified in the `trtRegimes` argument. If multiple treatment regimes are specified,
-#' `nSim` rows are added for each of the treatment regimes.
+#' `nSim` rows are added for each of the specified treatment regimes.
 #'
 #' `gFormulaImpute` uses the `mice` package to impute the potential outcome values of the
 #' time-varying confounders and outcome in the synthetic datasets. Imputation is performed
@@ -17,14 +18,18 @@
 #' by the corresponding treatment variable at that time.
 #'
 #' For the data argument, `gFormulaImpute` expects either a fully observed (complete) data frame,
-#' or else a set of multiple imputation stored in an object of class mids, created by mice
-#' in the mice package.
+#' or else a set of multiple imputation stored in an object of class `mids` (from the `mice` package).
+#'
+#' Unlike with Rubin's regular multiple imputation pooling rules, it is possible
+#' for the pooling rules developed by Raghunathan et al (2003) to give negative
+#' variance estimates. Because of this, in general it is recommended to use at
+#' least 25 imputations.
 #'
 #' `gFormulaImpute` returns an object of class `mids`. This can be analysed using the same
-#' methods that imputed datasets from `mice` can be analysed with. However, Rubin's standard
+#' methods that imputed datasets from `mice` can be analysed with (see examples). However, Rubin's standard
 #' pooling rules are not valid for analysis of the synthetic datasets. Instead, the synthetic
 #' variance estimator of Raghunathan et al (2003) must be used, as implemented in the
-#' `gFormulaAnalyse` function.
+#' [syntheticPool] function.
 #'
 #' @param data The observed data frame
 #' @param M The number of imputed datasets to generate
@@ -43,12 +48,31 @@
 #' @param predictorMatrix An optional predictor matrix to specify which variables to use
 #' as predictors in the imputation models. The default is to impute sequentially, i.e. impute
 #' using all variables to the left of the variable being imputed as covariates
-
 #'
-#' @return an S3 object of class mids (multiply imputed dataset)
+#' @returns an S3 object of class mids (multiply imputed dataset)
+#'
+#' @author Jonathan Bartlett \email{jonathan.bartlett1@@lshtm.ac.uk}
+#'
+#' @references Bartlett JW, Olarte Parra C, Daniel RM. G-formula for causal inference
+#' via multiple imputation. 2023 \url{https://arxiv.org/abs/2301.12026}
+#'
+#' Raghunathan TE, Reiter JP, Rubin DB. 2003. Multiple imputation for statistical
+#'  disclosure limitation. Journal of Official Statistics, 19(1), p.1-16.
+#'
 #' @export
 #'
 #' @examples
+#' set.seed(7626)
+#' #impute synthetic datasets under two regimes of interest
+#' imps <- gFormulaImpute(data=simDataFullyObs,M=10,trtVarStem="a",
+#'                         timePoints=3,
+#'                         trtRegimes=list(c(0,0,0),c(1,1,1)))
+#' #fit linear model to final outcome with regime as covariate
+#' fits <- with(imps, lm(y~factor(regime)))
+#' #pool results using Raghunathan et al 2003 rules
+#' syntheticPool(fits)
+#'
+#'
 gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
                            nSim=NULL, micePrintFlag=FALSE,
                            method=NULL,predictorMatrix=NULL) {
@@ -250,47 +274,3 @@ gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
 
 }
 
-#' Analyse a set of gFormulaMI synthetic imputed datasets
-#'
-#' @param fits Collection of model fits produced by a call of the form with(imps, lm(y~regime))
-#'
-#' @return
-#' @export
-#'
-#' @examples
-gFormulaAnalyse <- function(fits) {
-
-  M <- length(fits$analyses)
-  p <- length(fits$analyses[[1]]$coefficients)
-  ests <- array(0, dim=c(M,p))
-  within_vars <- array(0, dim=c(M,p))
-
-  for (i in 1:M) {
-      ests[i,] <- coefficients(fits$analyses[[i]])
-      within_vars[i,] <- diag(vcov(fits$analyses[[i]]))
-  }
-
-  overall_ests <- colMeans(ests)
-  v <- colMeans(within_vars)
-  b <- diag(var(ests))
-  total_var <- (1+1/M)*b - v
-  #degrees of freedom
-  df <- (M-1)*(1-(M*v)/((M+1)*b))
-
-  resTable <- array(0, dim=c(p,8))
-  resTable[,1] <- overall_ests
-  resTable[,2] <- v
-  resTable[,3] <- b
-  resTable[,4] <- total_var
-  resTable[,5] <- df
-  #95% confidence interval
-  resTable[,6] <- overall_ests - qt(0.975,df=df)*sqrt(total_var)
-  resTable[,7] <- overall_ests + qt(0.975,df=df)*sqrt(total_var)
-  #two sided p-value
-  resTable[,8] <- 2*pt(-abs(overall_ests/sqrt(total_var)),df=df)
-
-  colnames(resTable) <- c("Estimate", "Within", "Between", "Total", "df",
-                          "95% CI L", "95% CI U", "p")
-  rownames(resTable) <- names(coefficients(fits$analyses[[1]]))
-  resTable
-}
