@@ -78,6 +78,9 @@ methods that imputed datasets from \code{mice} can be analysed with (see example
 pooling rules are not valid for analysis of the synthetic datasets. Instead, the synthetic
 variance estimator of Raghunathan et al (2003) must be used, as implemented in the
 \link{syntheticPool} function.
+
+The development of the \code{gFormulaMI} package was supported by a grant from the UK
+Medical Research Council (MR/T023953/1).
 }
 \examples{
 set.seed(7626)

@@ -16,6 +16,9 @@
 #' be negative. In this case `syntheticPool` stops and informs you to re-impute
 #' using a larger number of imputations.
 #'
+#' The development of the `gFormulaMI` package was supported by a grant from the UK
+#' Medical Research Council (MR/T023953/1).
+#'
 #' @param fits Collection of model fits produced by a call of the form
 #'  `with(imps, lm(y~regime))` where `imps` is a collection of imputed datasets
 #'  of class `mids`.

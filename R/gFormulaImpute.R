@@ -31,6 +31,9 @@
 #' variance estimator of Raghunathan et al (2003) must be used, as implemented in the
 #' [syntheticPool] function.
 #'
+#' The development of the `gFormulaMI` package was supported by a grant from the UK
+#' Medical Research Council (MR/T023953/1).
+#'
 #' @param data The observed data frame
 #' @param M The number of imputed datasets to generate
 #' @param trtVarStem String indicating the stem of the treatment variables
