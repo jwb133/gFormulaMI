@@ -24,3 +24,4 @@ Depends:
     R (>= 2.10)
 LazyData: true
 VignetteBuilder: knitr
+URL: https://jwb133.github.io/gFormulaMI/
