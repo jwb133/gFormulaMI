@@ -65,7 +65,7 @@ syntheticPool <- function(fits) {
   }
 
   #degrees of freedom
-  df <- (M-1)*(1-(M*v)/((M+1)*b))
+  df <- (M-1)*(1-(M*v)/((M+1)*b))^2
 
   resTable <- array(0, dim=c(p,8))
   resTable[,1] <- overall_ests
