@@ -156,8 +156,8 @@ test_that("Check 95% CI coverage", {
     set.seed(7626)
     nSim <- 1000
     n <- 500
-    ciLower <- array(0, dim=nSim)
-    ciUpper <- array(0, dim=nSim)
+    ciRegime1 <- array(0, dim=c(nSim,2))
+    ciContrast <- array(0, dim=c(nSim,2))
 
     for (i in 1:nSim) {
 
@@ -171,15 +171,18 @@ test_that("Check 95% CI coverage", {
 
       simData <- data.frame(l0=l0,a0=a0,l1=l1,a1=a1,l2=l2,a2=a2,y=y)
 
-      impRes <- gFormulaImpute(data=simData,M=50,trtVarStem="a", timePoints=3, trtRegimes=c(0,0,0))
-      fits <- with(impRes, lm(y~1))
+      impRes <- gFormulaImpute(data=simData,M=50,trtVarStem="a", timePoints=3,
+                               trtRegimes=list(c(0,0,0),c(1,1,1)))
+      fits <- with(impRes, lm(y~factor(regime)))
       res <- syntheticPool(fits)
-      ciLower[i] <- res[6]
-      ciUpper[i] <- res[7]
+      ciRegime1[i,] <- c(res[1,6], res[1,7])
+      ciContrast[i,] <- c(res[2,6], res[2,7])
     }
-    included <- sum((ciLower<0) & (ciUpper>0))
-    ciCov <- prop.test(included,nSim)
-    #check 95% CI for 95% CI coverage includes 95%
+    ciRegime1Included <- sum((ciRegime1[,1]<0) & (ciRegime1[,2]>0))
+    ciContrastIncluded <- sum((ciContrast[,1]<3) & (ciContrast[,2]>3))
+    prop.test(ciRegime1Included,nSim)
+    ciCov <- prop.test(ciContrastIncluded,nSim)
+    #check 95% CI for 95% CI coverage for contrast of regimes includes 95%
     1*((ciCov$conf.int[1]<0.95) & (ciCov$conf.int[2]>0.95))
   }, 1)
 })
