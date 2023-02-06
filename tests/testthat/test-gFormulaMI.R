@@ -146,3 +146,40 @@ test_that("Check that syntheticPool catches non-positive variances", {
     syntheticPool(fits)
   })
 })
+
+#simulation studies to assess unbiasedness and coverage
+
+test_that("Check 95% CI coverage", {
+  skip_on_cran()
+  expect_equal({
+    expit <- function(x) exp(x)/(1+exp(x))
+    set.seed(7626)
+    nSim <- 1000
+    n <- 500
+    ciLower <- array(0, dim=nSim)
+    ciUpper <- array(0, dim=nSim)
+
+    for (i in 1:nSim) {
+
+      l0 <- rnorm(n)
+      a0 <- 1*(runif(n)<expit(l0))
+      l1 <- l0+a0+rnorm(n)
+      a1 <- 1*(runif(n)<expit(l1+a0))
+      l2 <- l1+a1+rnorm(n)
+      a2 <- 1*(runif(n)<expit(l2+a1))
+      y <- l2+a2+rnorm(n)
+
+      simData <- data.frame(l0=l0,a0=a0,l1=l1,a1=a1,l2=l2,a2=a2,y=y)
+
+      impRes <- gFormulaImpute(data=simData,M=50,trtVarStem="a", timePoints=3, trtRegimes=c(0,0,0))
+      fits <- with(impRes, lm(y~1))
+      res <- syntheticPool(fits)
+      ciLower[i] <- res[6]
+      ciUpper[i] <- res[7]
+    }
+    included <- sum((ciLower<0) & (ciUpper>0))
+    ciCov <- prop.test(included,nSim)
+    #check 95% CI for 95% CI coverage includes 95%
+    1*((ciCov$conf.int[1]<0.95) & (ciCov$conf.int[2]>0.95))
+  }, 1)
+})
