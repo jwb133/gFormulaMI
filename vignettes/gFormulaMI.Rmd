@@ -115,6 +115,6 @@ The output looks much the same as the first time we called `gFormulaImpute`, apa
 # References
 
 Bartlett JW, Olarte Parra C, Daniel RM. G-formula for causal inference
-via multiple imputation. 2023 \url{https://arxiv.org/abs/2301.12026}
+via multiple imputation. 2023 [arXiv 2301.12026](https://arxiv.org/abs/2301.12026)
 
 Raghunathan TE, Reiter JP, Rubin DB. 2003. Multiple imputation for statistical disclosure limitation. Journal of Official Statistics, 19(1), p.1-16.
