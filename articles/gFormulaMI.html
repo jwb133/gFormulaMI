@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gFormulaMI</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -112,13 +112,12 @@ imputation function from the <code>mice</code> package. If passed a
 regular data frame, as here, <code>gFormulaImpute</code> expects (and
 requires) there to be no missing values in the data frame. To run, we
 have to tell <code>gFormulaImpute</code> which variables correspond to
-the time-varying treatment, the number of time points (here 3) and the
-treatment regime(s) that we want it to create imputations for:</p>
+the time-varying treatment and the treatment regime(s) that we want it
+to create imputations for:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7626</span><span class="op">)</span></span>
 <span><span class="co">#impute synthetic datasets under two regimes of interest</span></span>
-<span><span class="va">imps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gFormulaImpute.html">gFormulaImpute</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">simDataFullyObs</span>,M<span class="op">=</span><span class="fl">10</span>,trtVarStem<span class="op">=</span><span class="st">"a"</span>,</span>
-<span>                        timePoints<span class="op">=</span><span class="fl">3</span>,</span>
+<span><span class="va">imps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gFormulaImpute.html">gFormulaImpute</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">simDataFullyObs</span>,M<span class="op">=</span><span class="fl">10</span>,trtVars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a0"</span>,<span class="st">"a1"</span>,<span class="st">"a2"</span><span class="op">)</span>,</span>
 <span>                        trtRegimes<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Input data is a regular data frame."</span></span>
 <span><span class="co">#&gt; [1] "Variables imputed using:"</span></span>
@@ -298,8 +297,7 @@ predictive mean matching method, rather than normal linear regression
 before, but this time let’s try and generate 20 synthetic imputated
 datasets:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">imps2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gFormulaImpute.html">gFormulaImpute</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">simDataMissingImps</span>,M<span class="op">=</span><span class="fl">20</span>,trtVarStem<span class="op">=</span><span class="st">"a"</span>,</span>
-<span>                        timePoints<span class="op">=</span><span class="fl">3</span>,</span>
+<code class="sourceCode R"><span><span class="va">imps2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gFormulaImpute.html">gFormulaImpute</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">simDataMissingImps</span>,M<span class="op">=</span><span class="fl">20</span>,trtVars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a0"</span>,<span class="st">"a1"</span>,<span class="st">"a2"</span><span class="op">)</span>,</span>
 <span>                        trtRegimes<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Input data is a mice created multiple imputation object."</span></span>
 <span><span class="co">#&gt; [1] "Value passed to M being ignored."</span></span>

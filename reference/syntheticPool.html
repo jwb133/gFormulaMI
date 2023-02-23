@@ -14,7 +14,7 @@ using the method developed by Raghunathan et al 2003."><!-- mathjax --><script s
     
     <a class="navbar-brand me-2" href="../index.html">gFormulaMI</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,30 +99,13 @@ disclosure limitation. Journal of Official Statistics, 19(1), p.1-16.</p>
 <span class="r-in"><span><span class="va">imps</span> <span class="op">&lt;-</span> <span class="fu"><a href="gFormulaImpute.html">gFormulaImpute</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">simDataFullyObs</span>,M<span class="op">=</span><span class="fl">10</span>,trtVarStem<span class="op">=</span><span class="st">"a"</span>,</span></span>
 <span class="r-in"><span>                        timePoints<span class="op">=</span><span class="fl">3</span>,</span></span>
 <span class="r-in"><span>                        trtRegimes<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Input data is a regular data frame."</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Variables imputed using:"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     l0     a0     l1     a1     l2     a2      y regime </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> "norm"     "" "norm"     "" "norm"     "" "norm"     "" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Predictor matrix is set to:"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        l0 a0 l1 a1 l2 a2 y regime</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> l0      0  0  0  0  0  0 0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> a0      1  0  0  0  0  0 0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> l1      1  1  0  0  0  0 0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> a1      1  1  1  0  0  0 0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> l2      1  1  1  1  0  0 0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> a2      1  1  1  1  1  0 0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y       1  1  1  1  1  1 0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> regime  1  1  1  1  1  1 1      0</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in gFormulaImpute(data = simDataFullyObs, M = 10, trtVarStem = "a",     timePoints = 3, trtRegimes = list(c(0, 0, 0), c(1, 1, 1))):</span> unused arguments (trtVarStem = "a", timePoints = 3)</span>
 <span class="r-in"><span><span class="co">#fit linear model to final outcome with regime as covariate</span></span></span>
 <span class="r-in"><span><span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">imps</span>, <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">regime</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in with(imps, lm(y ~ factor(regime))):</span> object 'imps' not found</span>
 <span class="r-in"><span><span class="co">#pool results using Raghunathan et al 2003 rules</span></span></span>
 <span class="r-in"><span><span class="fu">syntheticPool</span><span class="op">(</span><span class="va">fits</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                    Estimate       Within     Between       Total       df</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)     -0.02071539 0.0008125695 0.001763004 0.001126735 3.038045</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> factor(regime)2  2.96593502 0.0016251389 0.004203106 0.002998278 3.784951</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   95% CI L   95% CI U            p</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)     -0.1267874 0.08535658 5.803156e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> factor(regime)2  2.8104386 3.12143146 1.304839e-06</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in syntheticPool(fits):</span> object 'fits' not found</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
