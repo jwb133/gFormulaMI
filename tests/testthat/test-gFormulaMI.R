@@ -3,7 +3,7 @@
 test_that("gFormulaImpute and syntheticPool run when input data frame has no missing data", {
   expect_error({
     set.seed(7626)
-    impRes <- gFormulaImpute(data=simDataFullyObs,M=10,trtVarStem="a", timePoints=3, trtRegimes=c(0,0,0))
+    impRes <- gFormulaImpute(data=simDataFullyObs,M=10,trtVars=c("a0","a1","a2"), trtRegimes=c(0,0,0))
     fits <- with(impRes, lm(y~1))
     syntheticPool(fits)
   }, NA)
@@ -12,7 +12,7 @@ test_that("gFormulaImpute and syntheticPool run when input data frame has no mis
 test_that("Check 95% confidence interval includes true value, one regime 0,0,0", {
   expect_equal({
     set.seed(7626)
-    impRes <- gFormulaImpute(data=simDataFullyObs,M=50,trtVarStem="a", timePoints=3, trtRegimes=c(0,0,0))
+    impRes <- gFormulaImpute(data=simDataFullyObs,M=50,trtVars=c("a0","a1","a2"), trtRegimes=c(0,0,0))
     fits <- with(impRes, lm(y~1))
     res <- syntheticPool(fits)
     #true mean under regime is 0
@@ -23,7 +23,7 @@ test_that("Check 95% confidence interval includes true value, one regime 0,0,0",
 test_that("Check 95% confidence interval includes true value, one regime 1,1,1", {
   expect_equal({
     set.seed(7626)
-    impRes <- gFormulaImpute(data=simDataFullyObs,M=50,trtVarStem="a", timePoints=3, trtRegimes=c(1,1,1))
+    impRes <- gFormulaImpute(data=simDataFullyObs,M=50,trtVars=c("a0","a1","a2"),trtRegimes=c(1,1,1))
     fits <- with(impRes, lm(y~1))
     res <- syntheticPool(fits)
     #true mean under regime is 3
@@ -34,7 +34,7 @@ test_that("Check 95% confidence interval includes true value, one regime 1,1,1",
 test_that("gFormulaImpute runs with two regimes", {
   expect_error({
     set.seed(7626)
-    impRes <- gFormulaImpute(data=simDataFullyObs,M=10,trtVarStem="a",timePoints=3,
+    impRes <- gFormulaImpute(data=simDataFullyObs,M=10,trtVars=c("a0","a1","a2"),
                              trtRegimes=list(c(0,0,0),c(1,1,1)))
     fits <- with(impRes, lm(y~factor(regime)))
     syntheticPool(fits)
@@ -44,7 +44,7 @@ test_that("gFormulaImpute runs with two regimes", {
 test_that("Check 95% confidence interval includes true value, two regimes", {
   expect_equal({
     set.seed(7626)
-    impRes <- gFormulaImpute(data=simDataFullyObs,M=50,trtVarStem="a",timePoints=3,
+    impRes <- gFormulaImpute(data=simDataFullyObs,M=50,trtVars=c("a0","a1","a2"),
                              trtRegimes=list(c(0,0,0),c(1,1,1)))
     fits <- with(impRes, lm(y~factor(regime)))
     res <- syntheticPool(fits)
@@ -57,22 +57,29 @@ test_that("If passed a regular data frame with missing values, it should error",
   expect_error({
     modData <- simDataFullyObs
     modData$l1[1:5] <- NA
-    impRes <- gFormulaImpute(data=modData,M=50,trtVarStem="a",timePoints=3,
+    impRes <- gFormulaImpute(data=modData,M=50,trtVars=c("a0","a1","a2"),
                              trtRegimes=list(c(0,0,0),c(1,1,1)))
   })
 })
 
 test_that("Catching mismatch in treatment variables", {
   expect_error({
-    impRes <- gFormulaImpute(data=simDataFullyObs,M=50,trtVarStem="a",timePoints=2,
+    impRes <- gFormulaImpute(data=simDataFullyObs,M=50,trtVars=c("a0","a1","a2"),
                              trtRegimes=list(c(0,0),c(1,1)))
+  })
+})
+
+test_that("Catching mismatch in treatment variables", {
+  expect_error({
+    impRes <- gFormulaImpute(data=simDataFullyObs,M=50,trtVars=c("a0","a1"),
+                             trtRegimes=list(c(0,0,0),c(1,1,1)))
   })
 })
 
 test_that("gFormulaImpute runs when manually specifying method vector", {
   expect_error({
     set.seed(7626)
-    impRes <- gFormulaImpute(data=simDataFullyObs,M=10,trtVarStem="a", timePoints=3,
+    impRes <- gFormulaImpute(data=simDataFullyObs,M=10,trtVars=c("a0","a1","a2"),
                              trtRegimes=c(0,0,0),
                              method=c("norm","", "norm","","norm", "", "norm"))
   }, NA)
@@ -81,7 +88,7 @@ test_that("gFormulaImpute runs when manually specifying method vector", {
 test_that("When passed custom method, returned object method matches", {
   expect_equal({
     set.seed(7626)
-    impRes <- gFormulaImpute(data=simDataFullyObs,M=10,trtVarStem="a", timePoints=3,
+    impRes <- gFormulaImpute(data=simDataFullyObs,M=10,trtVars=c("a0","a1","a2"),
                              trtRegimes=c(0,0,0),
                              method=c("pmm","", "norm","","norm", "", "norm"))
     as.vector(impRes$method)
@@ -97,7 +104,7 @@ test_that("gFormulaImpute runs when manually specifying predictor matrix", {
     myPredMat <- mice::make.predictorMatrix(temp)
     myPredMat[,] <- lower.tri(myPredMat)
     myPredMat["l2",c("l0","a0")] <- 0
-    impRes <- gFormulaImpute(data=simDataFullyObs,M=10,trtVarStem="a", timePoints=3,
+    impRes <- gFormulaImpute(data=simDataFullyObs,M=10,trtVars=c("a0","a1","a2"),
                              trtRegimes=c(0,0,0),
                              predictorMatrix=myPredMat)
   }, NA)
@@ -108,7 +115,7 @@ test_that("gFormulaImpute runs when manually specifying predictor matrix", {
 test_that("Synthetic imputation runs when passed a mids object", {
   expect_error({
     set.seed(7626)
-    impRes <- gFormulaImpute(data=simDataMisImps,M=10,trtVarStem="a",timePoints=3,
+    impRes <- gFormulaImpute(data=simDataMisImps,M=10,trtVars=c("a0","a1","a2"),
                              trtRegimes=list(c(0,0,0),c(1,1,1)))
   },NA)
 })
@@ -117,7 +124,7 @@ test_that("Check 95% confidence interval includes true value,
           two regimes, missing data imputations as input", {
   expect_equal({
     set.seed(7626)
-    impRes <- gFormulaImpute(data=simDataMisImps,M=50,trtVarStem="a",timePoints=3,
+    impRes <- gFormulaImpute(data=simDataMisImps,M=50,trtVars=c("a0","a1","a2"),
                              trtRegimes=list(c(0,0,0),c(1,1,1)))
     fits <- with(impRes, lm(y~factor(regime)))
     res <- syntheticPool(fits)
@@ -129,7 +136,7 @@ test_that("Check 95% confidence interval includes true value,
 test_that("When passed custom method, returned object method matches (passing mids object)", {
   expect_equal({
     set.seed(7626)
-    impRes <- gFormulaImpute(data=simDataMisImps,M=50,trtVarStem="a",timePoints=3,
+    impRes <- gFormulaImpute(data=simDataMisImps,M=50,trtVars=c("a0","a1","a2"),
                              trtRegimes=list(c(0,0,0),c(1,1,1)),
                              method=c("pmm","", "norm","","norm", "", "norm"))
     as.vector(impRes$method)
@@ -141,7 +148,7 @@ test_that("Check that syntheticPool catches non-positive variances", {
   expect_error({
     set.seed(766)
     temp <- simDataFullyObs[1:10,]
-    impRes <- gFormulaImpute(data=simDataFullyObs,M=2,trtVarStem="a", timePoints=3, trtRegimes=c(0,0,0))
+    impRes <- gFormulaImpute(data=simDataFullyObs,M=2,trtVars=c("a0","a1","a2"), trtRegimes=c(0,0,0))
     fits <- with(impRes, lm(y~1))
     syntheticPool(fits)
   })
@@ -171,7 +178,7 @@ test_that("Check 95% CI coverage", {
 
       simData <- data.frame(l0=l0,a0=a0,l1=l1,a1=a1,l2=l2,a2=a2,y=y)
 
-      impRes <- gFormulaImpute(data=simData,M=50,trtVarStem="a", timePoints=3,
+      impRes <- gFormulaImpute(data=simData,M=50,trtVars=c("a0","a1","a2"),
                                trtRegimes=list(c(0,0,0),c(1,1,1)))
       fits <- with(impRes, lm(y~factor(regime)))
       res <- syntheticPool(fits)

@@ -36,10 +36,7 @@
 #'
 #' @param data The observed data frame
 #' @param M The number of imputed datasets to generate
-#' @param trtVarStem String indicating the stem of the treatment variables
-#' @param timePoints Integer specifying the number of timepoints (including baseline)
-#' @param trtRegimes A vector specifying the treatment regime of interest, or a list of
-#' vectors specifying the treatment regimes of interest
+#' @param trtVars A vector of variable names indicating the time-varying treatment variables
 #' @param nSim The number of individuals to simulate in each imputed dataset. Defaults to
 #' number of individuals in observed data
 #' @param micePrintFlag TRUE/FALSE specifying whether the output from the call to mice
@@ -67,8 +64,8 @@
 #' @examples
 #' set.seed(7626)
 #' #impute synthetic datasets under two regimes of interest
-#' imps <- gFormulaImpute(data=simDataFullyObs,M=10,trtVarStem="a",
-#'                         timePoints=3,
+#' imps <- gFormulaImpute(data=simDataFullyObs,M=10,
+#'                         trtVars=c("a0","a1","a2"),
 #'                         trtRegimes=list(c(0,0,0),c(1,1,1)))
 #' #fit linear model to final outcome with regime as covariate
 #' fits <- with(imps, lm(y~factor(regime)))
@@ -76,7 +73,7 @@
 #' syntheticPool(fits)
 #'
 #'
-gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
+gFormulaImpute <- function(data, M=50, trtVars, trtRegimes,
                            nSim=NULL, micePrintFlag=FALSE,
                            method=NULL,predictorMatrix=NULL) {
 
@@ -100,28 +97,32 @@ gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
     stop("Input dataset should either be a data frame or a mids object created by mice.")
   }
 
+  timePoints <- length(trtVars)
+
   if (typeof(trtRegimes)=="list") {
     numRegimes <- length(trtRegimes)
     #check trtRegimes elements each have length equal to timePoints
+    for (i in 1:numRegimes) {
+      if (length(trtRegimes[[i]])!=timePoints) {
+        stop("Length of one of the specified regimes does not match number of treatment variables.")
+      }
+    }
   } else {
     numRegimes <- 1
-    #check trtRegimes elements each have length equal to timePoints+1
+    #check trtRegimes elements each have length equal to timePoints
     if (length(trtRegimes)!=timePoints) {
-      stop("Length of treatment regime does not match number of timepoints.")
+      stop("Length of treatment regime does not match number of treatment variables.")
     }
   }
 
-  #check treatment variables are as expected in the data frame
-  #expected treatment variables are:
-  trtVarNames <- paste0(trtVarStem,0:(timePoints-1))
-  #variables with trtVarStem as stem are:
+  #check treatment variables are in data frame
   if (missingData==FALSE) {
-    varsWithStem <- colnames(data)[grepl(trtVarStem,colnames(data))]
+    dataVars <- colnames(data)
   } else {
-    varsWithStem <- colnames(firstImp)[grepl(trtVarStem,colnames(firstImp))]
+    dataVars <- colnames(firstImp)
   }
-  if (identical(trtVarNames,varsWithStem)==FALSE) {
-    stop("Mismatch between treatment variables in data frame and those expected.")
+  if (all(trtVars %in% dataVars)==FALSE) {
+    stop("Some of the treatment variables you specified are not in the data frame.")
   }
 
   if (missingData==TRUE) {
@@ -152,13 +153,13 @@ gFormulaImpute <- function(data, M=50, trtVarStem, timePoints, trtRegimes,
     syntheticDataBlank$regime <- as.factor(1)
     for (i in 1:timePoints) {
       #set treatment indicator according to specified regime
-      syntheticDataBlank[1:n,trtVarNames[i]] <- trtRegimes[i]
+      syntheticDataBlank[1:n,trtVars[i]] <- trtRegimes[i]
     }
   } else {
     syntheticDataBlank$regime <- as.factor(rep(1:numRegimes,each=nSim))
     for (j in 1:numRegimes) {
       for (i in 1:timePoints) {
-        syntheticDataBlank[((j-1)*nSim+1):(j*nSim), trtVarNames[i]] <- trtRegimes[[j]][i]
+        syntheticDataBlank[((j-1)*nSim+1):(j*nSim), trtVars[i]] <- trtRegimes[[j]][i]
       }
     }
   }

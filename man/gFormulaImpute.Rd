@@ -7,8 +7,7 @@
 gFormulaImpute(
   data,
   M = 50,
-  trtVarStem,
-  timePoints,
+  trtVars,
   trtRegimes,
   nSim = NULL,
   micePrintFlag = FALSE,
@@ -21,12 +20,7 @@ gFormulaImpute(
 
 \item{M}{The number of imputed datasets to generate}
 
-\item{trtVarStem}{String indicating the stem of the treatment variables}
-
-\item{timePoints}{Integer specifying the number of timepoints (including baseline)}
-
-\item{trtRegimes}{A vector specifying the treatment regime of interest, or a list of
-vectors specifying the treatment regimes of interest}
+\item{trtVars}{A vector of variable names indicating the time-varying treatment variables}
 
 \item{nSim}{The number of individuals to simulate in each imputed dataset. Defaults to
 number of individuals in observed data}
@@ -85,8 +79,8 @@ Medical Research Council (MR/T023953/1).
 \examples{
 set.seed(7626)
 #impute synthetic datasets under two regimes of interest
-imps <- gFormulaImpute(data=simDataFullyObs,M=10,trtVarStem="a",
-                        timePoints=3,
+imps <- gFormulaImpute(data=simDataFullyObs,M=10,
+                        trtVars=c("a0","a1","a2"),
                         trtRegimes=list(c(0,0,0),c(1,1,1)))
 #fit linear model to final outcome with regime as covariate
 fits <- with(imps, lm(y~factor(regime)))

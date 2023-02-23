@@ -35,13 +35,12 @@ head(simDataFullyObs)
 ```
 Here the `l` variables correspond to a confounder measured at baseline (`l0`) and two follow-up time points (`l1` and `l2`). The time-varying binary treatment variable is stored in `a0`, `a1` and `a2`. The final outcome variable is `y`.
 
-Next we use `gFormulaImpute` to impute potential outcomes under two treatment regimes of interest. To do this, `gFormulaImpute` uses the `mice` multiple imputation function from the `mice` package. If passed a regular data frame, as here, `gFormulaImpute` expects (and requires) there to be no missing values in the data frame. To run, we have to tell `gFormulaImpute` which variables correspond to the time-varying treatment, the number of time points (here 3) and the treatment regime(s) that we want it to create imputations for:
+Next we use `gFormulaImpute` to impute potential outcomes under two treatment regimes of interest. To do this, `gFormulaImpute` uses the `mice` multiple imputation function from the `mice` package. If passed a regular data frame, as here, `gFormulaImpute` expects (and requires) there to be no missing values in the data frame. To run, we have to tell `gFormulaImpute` which variables correspond to the time-varying treatment and the treatment regime(s) that we want it to create imputations for:
 
 ```{r}
 set.seed(7626)
 #impute synthetic datasets under two regimes of interest
-imps <- gFormulaImpute(data=simDataFullyObs,M=10,trtVarStem="a",
-                        timePoints=3,
+imps <- gFormulaImpute(data=simDataFullyObs,M=10,trtVars=c("a0","a1","a2"),
                         trtRegimes=list(c(0,0,0),c(1,1,1)))
 ```
 
@@ -105,8 +104,7 @@ In a real substantive analysis we should take more care to think about how we sp
 
 We can now pass our multiply imputed datasets to `gFormulaImpute` to create the synthetic imputations as before, but this time let's try and generate 20 synthetic imputated datasets:
 ```{r}
-imps2 <- gFormulaImpute(data=simDataMissingImps,M=20,trtVarStem="a",
-                        timePoints=3,
+imps2 <- gFormulaImpute(data=simDataMissingImps,M=20,trtVars=c("a0","a1","a2"),
                         trtRegimes=list(c(0,0,0),c(1,1,1)))
 ```
 The output looks much the same as the first time we called `gFormulaImpute`, apart from the first few lines of output. `gFormulaImpute` can see that there are only 10 imputations of the original dataset, and it refuses to generate a different number of imputations to the number in the `mids` multiple imputation dataset object we have passed to it. The `imps2` object thus contains 10 imputations, which can be analysed using `syntheticPool` in the same way as before.
