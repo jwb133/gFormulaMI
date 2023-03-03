@@ -41,6 +41,7 @@
 #' number of individuals in observed data
 #' @param micePrintFlag TRUE/FALSE specifying whether the output from the call to mice
 #' should be printed
+#' @param silent TRUE/FALSE indicating whether to print output to console (FALSE) or not (TRUE)
 #' @param method An optional method argument to pass to mice. If not specified, the default
 #' is to impute continuous variables using normal linear regression (norm), binary variables using
 #' logistic regression (logreg), polytomous regression for unordered factors and
@@ -74,21 +75,27 @@
 #'
 #'
 gFormulaImpute <- function(data, M=50, trtVars, trtRegimes,
-                           nSim=NULL, micePrintFlag=FALSE,
+                           nSim=NULL, micePrintFlag=FALSE,silent=FALSE,
                            method=NULL,predictorMatrix=NULL) {
 
   if (class(data)=="mids") {
     missingData <- TRUE
-    print("Input data is a mice created multiple imputation object.")
+    if (silent==FALSE) {
+      print("Input data is a mice created multiple imputation object.")
+    }
     if (data$m!=M) {
-      print("Value passed to M being ignored.")
-      print(paste("Number of synthetic imputations to be generated set to",data$m, "as in mids object passed to gFormulaImpute."))
+      if (silent==FALSE) {
+        print("Value passed to M being ignored.")
+        print(paste("Number of synthetic imputations to be generated set to",data$m, "as in mids object passed to gFormulaImpute."))
+      }
     }
     M <- data$m
     firstImp <- mice::complete(data,1)
   } else if (class(data)=="data.frame")  {
     missingData <- FALSE
-    print("Input data is a regular data frame.")
+    if (silent==FALSE) {
+      print("Input data is a regular data frame.")
+    }
     #check there are no missing values
     if (sum(is.na(data))>0) {
       stop("Missing values detected - please multiply impute these and pass a mids type object as input.")
@@ -193,10 +200,12 @@ gFormulaImpute <- function(data, M=50, trtVars, trtRegimes,
                predictorMatrix = predictorMatrix,m=M,maxit=1,
                printFlag = micePrintFlag)
 
-    print("Variables imputed using:")
-    print(imps$method)
-    print("Predictor matrix is set to:")
-    print(imps$predictorMatrix)
+    if (silent==FALSE) {
+      print("Variables imputed using:")
+      print(imps$method)
+      print("Predictor matrix is set to:")
+      print(imps$predictorMatrix)
+    }
 
     #remove original data from imputations
     returnImps <- mice::complete(data=imps,action="long",include=TRUE)
@@ -246,10 +255,12 @@ gFormulaImpute <- function(data, M=50, trtVars, trtRegimes,
                    printFlag = FALSE)
 
       if (i==1) {
-        print("Variables imputed using:")
-        print(imps$method)
-        print("Predictor matrix is set to:")
-        print(imps$predictorMatrix)
+        if (silent==FALSE) {
+          print("Variables imputed using:")
+          print(imps$method)
+          print("Predictor matrix is set to:")
+          print(imps$predictorMatrix)
+        }
       }
 
       #prepare single imputation for copying to imputeDatasetsLong

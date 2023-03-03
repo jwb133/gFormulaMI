@@ -8,7 +8,7 @@
 #' an analysis on an imputed dataset collection of class `mids`, as created
 #' for example using the `mice` function in the `mice` package.
 #'
-#' The function prints the overall parameter estimates, the within, between and total imputation
+#' The function returns a table containing the overall parameter estimates, the within, between and total imputation
 #' variances, 95% confidence intervals, and p-values testing the null hypothesis
 #' that the corresponding parameters equal zero.
 #'
