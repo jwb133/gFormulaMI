@@ -14,7 +14,7 @@
 #'
 #' It is possible for the variance estimator developed by Raghunathan et al 2003 to
 #' be negative. In this case `syntheticPool` stops and informs you to re-impute
-#' using a larger number of imputations.
+#' using a larger number of imputations `M` and/or `nSim`.
 #'
 #' The development of the `gFormulaMI` package was supported by a grant from the UK
 #' Medical Research Council (MR/T023953/1).
@@ -61,7 +61,7 @@ syntheticPool <- function(fits) {
 
   #check that all variances are positive
   if (any(total_var<=0)) {
-    stop("Some parameters have estimated total variances which are not positive. Re-run the imputation process using a larger number of imputations.")
+    stop("Some parameters have estimated total variances which are not positive. Re-run the imputation process using larger M and/or nSim values.")
   }
 
   #degrees of freedom

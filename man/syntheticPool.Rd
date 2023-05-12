@@ -24,13 +24,13 @@ The only argument to \code{syntheticPool} is a set of model fits obtained by run
 an analysis on an imputed dataset collection of class \code{mids}, as created
 for example using the \code{mice} function in the \code{mice} package.
 
-The function prints the overall parameter estimates, the within, between and total imputation
+The function returns a table containing the overall parameter estimates, the within, between and total imputation
 variances, 95\% confidence intervals, and p-values testing the null hypothesis
 that the corresponding parameters equal zero.
 
 It is possible for the variance estimator developed by Raghunathan et al 2003 to
 be negative. In this case \code{syntheticPool} stops and informs you to re-impute
-using a larger number of imputations.
+using a larger number of imputations \code{M} and/or \code{nSim}.
 
 The development of the \code{gFormulaMI} package was supported by a grant from the UK
 Medical Research Council (MR/T023953/1).

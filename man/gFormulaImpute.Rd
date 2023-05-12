@@ -11,6 +11,7 @@ gFormulaImpute(
   trtRegimes,
   nSim = NULL,
   micePrintFlag = FALSE,
+  silent = FALSE,
   method = NULL,
   predictorMatrix = NULL
 )
@@ -27,6 +28,8 @@ number of individuals in observed data}
 
 \item{micePrintFlag}{TRUE/FALSE specifying whether the output from the call to mice
 should be printed}
+
+\item{silent}{TRUE/FALSE indicating whether to print output to console (FALSE) or not (TRUE)}
 
 \item{method}{An optional method argument to pass to mice. If not specified, the default
 is to impute continuous variables using normal linear regression (norm), binary variables using
@@ -64,8 +67,8 @@ or else a set of multiple imputation stored in an object of class \code{mids} (f
 
 Unlike with Rubin's regular multiple imputation pooling rules, it is possible
 for the pooling rules developed by Raghunathan et al (2003) to give negative
-variance estimates. Because of this, in general it is recommended to use at
-least 25 imputations.
+variance estimates. The probability of this occurring is reduced by increasing
+\code{M} and/or \code{nSim}.
 
 \code{gFormulaImpute} returns an object of class \code{mids}. This can be analysed using the same
 methods that imputed datasets from \code{mice} can be analysed with (see examples). However, Rubin's standard

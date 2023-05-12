@@ -22,8 +22,8 @@
 #'
 #' Unlike with Rubin's regular multiple imputation pooling rules, it is possible
 #' for the pooling rules developed by Raghunathan et al (2003) to give negative
-#' variance estimates. Because of this, in general it is recommended to use at
-#' least 25 imputations.
+#' variance estimates. The probability of this occurring is reduced by increasing
+#' `M` and/or `nSim`.
 #'
 #' `gFormulaImpute` returns an object of class `mids`. This can be analysed using the same
 #' methods that imputed datasets from `mice` can be analysed with (see examples). However, Rubin's standard
