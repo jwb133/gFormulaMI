@@ -73,12 +73,12 @@ of class <code>mids</code>.</p></dd>
     <p>The only argument to <code>syntheticPool</code> is a set of model fits obtained by running
 an analysis on an imputed dataset collection of class <code>mids</code>, as created
 for example using the <code>mice</code> function in the <code>mice</code> package.</p>
-<p>The function prints the overall parameter estimates, the within, between and total imputation
+<p>The function returns a table containing the overall parameter estimates, the within, between and total imputation
 variances, 95% confidence intervals, and p-values testing the null hypothesis
 that the corresponding parameters equal zero.</p>
 <p>It is possible for the variance estimator developed by Raghunathan et al 2003 to
 be negative. In this case <code>syntheticPool</code> stops and informs you to re-impute
-using a larger number of imputations.</p>
+using a larger number of imputations <code>M</code> and/or <code>nSim</code>.</p>
 <p>The development of the <code>gFormulaMI</code> package was supported by a grant from the UK
 Medical Research Council (MR/T023953/1).</p>
     </div>
@@ -102,10 +102,10 @@ disclosure limitation. Journal of Official Statistics, 19(1), p.1-16.</p>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in gFormulaImpute(data = simDataFullyObs, M = 10, trtVarStem = "a",     timePoints = 3, trtRegimes = list(c(0, 0, 0), c(1, 1, 1))):</span> unused arguments (trtVarStem = "a", timePoints = 3)</span>
 <span class="r-in"><span><span class="co">#fit linear model to final outcome with regime as covariate</span></span></span>
 <span class="r-in"><span><span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">imps</span>, <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">regime</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in with(imps, lm(y ~ factor(regime))):</span> object 'imps' not found</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'imps' not found</span>
 <span class="r-in"><span><span class="co">#pool results using Raghunathan et al 2003 rules</span></span></span>
 <span class="r-in"><span><span class="fu">syntheticPool</span><span class="op">(</span><span class="va">fits</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in syntheticPool(fits):</span> object 'fits' not found</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'fits' not found</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
