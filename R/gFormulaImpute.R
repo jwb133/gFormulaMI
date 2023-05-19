@@ -39,7 +39,7 @@
 #' @param trtVars A vector of variable names indicating the time-varying treatment variables
 #' @param nSim The number of individuals to simulate in each imputed dataset. Defaults to
 #' number of individuals in observed data
-#' @param micePrintFlag TRUE/FALSE specifying whether the output from the call to mice
+#' @param micePrintFlag TRUE/FALSE specifying whether the output from the call(s) to mice
 #' should be printed
 #' @param silent TRUE/FALSE indicating whether to print output to console (FALSE) or not (TRUE)
 #' @param method An optional method argument to pass to mice. If not specified, the default
@@ -173,7 +173,7 @@ gFormulaImpute <- function(data, M=50, trtVars, trtRegimes,
 
   #set up predictor matrix for mice, exploiting monotone pattern
   predMat <- mice::make.predictorMatrix(syntheticDataBlank)
-  predMat[,] <- lower.tri(predMat)
+  predMat[,] <- 1*(lower.tri(predMat))
 
   if (missingData==FALSE) {
     data$regime <- as.factor(0)
@@ -208,13 +208,7 @@ gFormulaImpute <- function(data, M=50, trtVars, trtRegimes,
     }
 
     #remove original data from imputations
-    returnImps <- mice::complete(data=imps,action="long",include=TRUE)
-    returnImps <- returnImps[returnImps$regime!=0,]
-    #turn back into a mids object
-    returnImps <- suppressWarnings(mice::as.mids(returnImps))
-    #copy over predictor matrix  used into imps
-    returnImps$predictorMatrix <- predMat
-    returnImps$method <- imps$method
+    returnImps <- mice::filter(imps, regime!=0)
 
   } else {
 
@@ -252,7 +246,7 @@ gFormulaImpute <- function(data, M=50, trtVars, trtRegimes,
       imps <- mice::mice(data=inputData,
                    method=method,
                    predictorMatrix = predictorMatrix,m=1,maxit=1,
-                   printFlag = TRUE)
+                   printFlag = micePrintFlag)
 
       if (i==1) {
         if (silent==FALSE) {

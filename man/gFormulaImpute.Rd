@@ -26,7 +26,7 @@ gFormulaImpute(
 \item{nSim}{The number of individuals to simulate in each imputed dataset. Defaults to
 number of individuals in observed data}
 
-\item{micePrintFlag}{TRUE/FALSE specifying whether the output from the call to mice
+\item{micePrintFlag}{TRUE/FALSE specifying whether the output from the call(s) to mice
 should be printed}
 
 \item{silent}{TRUE/FALSE indicating whether to print output to console (FALSE) or not (TRUE)}
