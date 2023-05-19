@@ -193,3 +193,13 @@ test_that("Check 95% CI coverage", {
     1*((ciCov$conf.int[1]<0.95) & (ciCov$conf.int[2]>0.95))
   }, 1)
 })
+
+test_that("gFormulaImpute runs with binary confounders", {
+  expect_error({
+    simDataFullyObs$l0 <- factor(1*(simDataFullyObs$l0<0))
+    simDataFullyObs$l1 <- factor(1*(simDataFullyObs$l1<0))
+    simDataFullyObs$l2 <- factor(1*(simDataFullyObs$l2<0))
+    set.seed(7626)
+    impRes <- gFormulaImpute(data=simDataFullyObs,M=10,trtVars=c("a0","a1","a2"), trtRegimes=c(0,0,0))
+  }, NA)
+})
