@@ -252,7 +252,7 @@ gFormulaImpute <- function(data, M=50, trtVars, trtRegimes,
       imps <- mice::mice(data=inputData,
                    method=method,
                    predictorMatrix = predictorMatrix,m=1,maxit=1,
-                   printFlag = FALSE)
+                   printFlag = TRUE)
 
       if (i==1) {
         if (silent==FALSE) {
