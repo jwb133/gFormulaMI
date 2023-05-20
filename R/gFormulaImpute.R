@@ -215,7 +215,7 @@ gFormulaImpute <- function(data, M=50, trtVars, trtRegimes,
     #create empty 'long' dataframe that will store all the imputations
     imputedDatasetsLong <- data.frame(matrix(NA,nrow=M*nSim*numRegimes,
                       ncol=ncol(firstImp)))
-    imputedDatasetsLong$regime <- factor(NA, levels=c("1","2"))
+    imputedDatasetsLong$regime <- factor(NA, levels=c(as.character(1:numRegimes)))
     colnames(imputedDatasetsLong) <- colnames(syntheticDataBlank)
     imputedDatasetsLong$.imp <- rep(1:M,each=nSim*numRegimes)
     imputedDatasetsLong$.id <- rep(1:(nSim*numRegimes), times=M)
@@ -269,13 +269,11 @@ gFormulaImpute <- function(data, M=50, trtVars, trtRegimes,
     #put 'original' data at top
     imputedDatasetsLong <- rbind(cbind(syntheticDataBlank,.imp=0,.id=1:(nSim*numRegimes)),
                                  imputedDatasetsLong)
-
     #turn back into a mids object
     returnImps <- mice::as.mids(imputedDatasetsLong)
     #copy over predictor matrix  used into imps
     returnImps$predictorMatrix <- predMat
     returnImps$method <- imps$method
-
   }
   #return the imputations
   returnImps

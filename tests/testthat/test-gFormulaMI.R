@@ -203,3 +203,26 @@ test_that("gFormulaImpute runs with binary confounders", {
     impRes <- gFormulaImpute(data=simDataFullyObs,M=10,trtVars=c("a0","a1","a2"), trtRegimes=c(0,0,0))
   }, NA)
 })
+
+test_that("Check we run and are unbiased with factor treatments", {
+  skip_on_cran()
+  expect_equal({
+    set.seed(72345)
+    n <- 1000
+    l0 <- rnorm(n)
+    u <- runif(n)
+    a0 <- 1*(u<0.3) + 1
+    a0[u>0.6] <- 3
+    a0 <- as.factor(a0)
+    y <- l0+I(a0==2)+2*I(a0==3)+rnorm(n)
+
+    simData <- data.frame(l0=l0,a0=a0,y=y)
+
+    impRes <- gFormulaImpute(data=simData,M=100,trtVars=c("a0"),trtRegimes=list(1,2,3))
+    fits <- with(impRes, lm(y~factor(regime)))
+    res <- syntheticPool(fits)
+
+    #check treatment level 3 vs 1 95% CI includes true value (2)
+    1*((res[3,6]<2) & (res[3,7]>2))
+  }, 1)
+})
