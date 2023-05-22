@@ -23,6 +23,9 @@ gFormulaImpute(
 
 \item{trtVars}{A vector of variable names indicating the time-varying treatment variables}
 
+\item{trtRegimes}{A vector specifying the treatment regime of interest, or a list of
+vectors specifying the treatment regimes of interest}
+
 \item{nSim}{The number of individuals to simulate in each imputed dataset. Defaults to
 number of individuals in observed data}
 

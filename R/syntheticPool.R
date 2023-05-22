@@ -33,8 +33,8 @@
 #' @examples
 #' set.seed(7626)
 #' #impute synthetic datasets under two regimes of interest using gFormulaImpute
-#' imps <- gFormulaImpute(data=simDataFullyObs,M=10,trtVarStem="a",
-#'                         timePoints=3,
+#' imps <- gFormulaImpute(data=simDataFullyObs,M=10,
+#'                         trtVars=c("a0","a1","a2"),
 #'                         trtRegimes=list(c(0,0,0),c(1,1,1)))
 #' #fit linear model to final outcome with regime as covariate
 #' fits <- with(imps, lm(y~factor(regime)))
@@ -45,18 +45,18 @@
 syntheticPool <- function(fits) {
 
   M <- length(fits$analyses)
-  p <- length(fits$analyses[[1]]$coefficients)
+  p <- length(stats::coefficients(fits$analyses[[1]]))
   ests <- array(0, dim=c(M,p))
   within_vars <- array(0, dim=c(M,p))
 
   for (i in 1:M) {
-    ests[i,] <- coefficients(fits$analyses[[i]])
-    within_vars[i,] <- diag(vcov(fits$analyses[[i]]))
+    ests[i,] <- stats::coefficients(fits$analyses[[i]])
+    within_vars[i,] <- diag(stats::vcov(fits$analyses[[i]]))
   }
 
   overall_ests <- colMeans(ests)
   v <- colMeans(within_vars)
-  b <- diag(var(ests))
+  b <- diag(stats::var(ests))
   total_var <- (1+1/M)*b - v
 
   #check that all variances are positive
@@ -74,13 +74,13 @@ syntheticPool <- function(fits) {
   resTable[,4] <- total_var
   resTable[,5] <- df
   #95% confidence interval
-  resTable[,6] <- overall_ests - qt(0.975,df=df)*sqrt(total_var)
-  resTable[,7] <- overall_ests + qt(0.975,df=df)*sqrt(total_var)
+  resTable[,6] <- overall_ests - stats::qt(0.975,df=df)*sqrt(total_var)
+  resTable[,7] <- overall_ests + stats::qt(0.975,df=df)*sqrt(total_var)
   #two sided p-value
-  resTable[,8] <- 2*pt(-abs(overall_ests/sqrt(total_var)),df=df)
+  resTable[,8] <- 2*stats::pt(-abs(overall_ests/sqrt(total_var)),df=df)
 
   colnames(resTable) <- c("Estimate", "Within", "Between", "Total", "df",
                           "95% CI L", "95% CI U", "p")
-  rownames(resTable) <- names(coefficients(fits$analyses[[1]]))
+  rownames(resTable) <- names(stats::coefficients(fits$analyses[[1]]))
   resTable
 }

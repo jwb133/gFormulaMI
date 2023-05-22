@@ -37,6 +37,8 @@
 #' @param data The observed data frame
 #' @param M The number of imputed datasets to generate
 #' @param trtVars A vector of variable names indicating the time-varying treatment variables
+#' @param trtRegimes A vector specifying the treatment regime of interest, or a list of
+#' vectors specifying the treatment regimes of interest
 #' @param nSim The number of individuals to simulate in each imputed dataset. Defaults to
 #' number of individuals in observed data
 #' @param micePrintFlag TRUE/FALSE specifying whether the output from the call(s) to mice
@@ -78,7 +80,7 @@ gFormulaImpute <- function(data, M=50, trtVars, trtRegimes,
                            nSim=NULL, micePrintFlag=FALSE,silent=FALSE,
                            method=NULL,predictorMatrix=NULL) {
 
-  if (class(data)=="mids") {
+  if (inherits(data, "mids")) {
     missingData <- TRUE
     if (silent==FALSE) {
       print("Input data is a mice created multiple imputation object.")
@@ -91,7 +93,7 @@ gFormulaImpute <- function(data, M=50, trtVars, trtRegimes,
     }
     M <- data$m
     firstImp <- mice::complete(data,1)
-  } else if (class(data)=="data.frame")  {
+  } else if (inherits(data,"data.frame"))  {
     missingData <- FALSE
     if (silent==FALSE) {
       print("Input data is a regular data frame.")
@@ -208,6 +210,8 @@ gFormulaImpute <- function(data, M=50, trtVars, trtRegimes,
     }
 
     #remove original data from imputations
+    #but first declare regime=NULL to avoid CRAN note
+    regime <- NULL
     returnImps <- mice::filter(imps, regime!=0)
 
   } else {

@@ -38,8 +38,8 @@ Medical Research Council (MR/T023953/1).
 \examples{
 set.seed(7626)
 #impute synthetic datasets under two regimes of interest using gFormulaImpute
-imps <- gFormulaImpute(data=simDataFullyObs,M=10,trtVarStem="a",
-                        timePoints=3,
+imps <- gFormulaImpute(data=simDataFullyObs,M=10,
+                        trtVars=c("a0","a1","a2"),
                         trtRegimes=list(c(0,0,0),c(1,1,1)))
 #fit linear model to final outcome with regime as covariate
 fits <- with(imps, lm(y~factor(regime)))
