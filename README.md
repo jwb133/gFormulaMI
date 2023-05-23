@@ -6,7 +6,7 @@
 
 gFormulaMI is an R package that implements the G-formula method for causal inference with
 time-varying treatments and confounders using multiple imputation methods. For more information,
-including examples, see the gFormulaMI [package website](https://jwb133.github.io/gFormulaMI/).
+including examples, see the ['Get Started'](https://jwb133.github.io/gFormulaMI/articles/gFormulaMI.html) page.
 
 ## Installation
 

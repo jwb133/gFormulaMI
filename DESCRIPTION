@@ -1,13 +1,13 @@
 Package: gFormulaMI
-Title: G-formula for Causal Inference via Multiple Imputation
+Title: G-Formula for Causal Inference via Multiple Imputation
 Version: 0.0.1
 Authors@R: 
     c(person("Jonathan", "Bartlett", , "jonathan.bartlett1@lshtm.ac.uk", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-7117-0195")),
            person("Camila", "Olarte Parra", email = "camila.olarte-parra@lshtm.ac.uk", role = "ctb",
            comment = c(ORCID = "0000-0003-0263-4392")))
-Description: This package implements the G-formula method for causal inference
-  using Bayesian multiple imputation methods. It creates multiple synthetic imputed
+Description: Implements the G-Formula method for causal inference with time-varying treatment and
+  confounders using Bayesian multiple imputation methods. It creates multiple synthetic imputed
   datasets under treatment regimes of interest using the mice package. These can then be analysed
   using rules developed for analysing multiple synthetic datasets.
 License: GPL (>= 3)
