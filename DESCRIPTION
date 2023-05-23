@@ -6,7 +6,7 @@ Authors@R:
            comment = c(ORCID = "0000-0001-7117-0195")),
            person("Camila", "Olarte Parra", email = "camila.olarte-parra@lshtm.ac.uk", role = "ctb",
            comment = c(ORCID = "0000-0003-0263-4392")))
-Description: Implements the G-Formula method for causal inference with time-varying treatment and
+Description: Implements the G-Formula method for causal inference with time-varying treatments and
   confounders using Bayesian multiple imputation methods. It creates multiple synthetic imputed
   datasets under treatment regimes of interest using the mice package. These can then be analysed
   using rules developed for analysing multiple synthetic datasets.

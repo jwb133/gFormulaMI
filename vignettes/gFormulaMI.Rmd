@@ -1,5 +1,5 @@
 ---
-title: "gFormulaMI - G-formula for causal inference via multiple imputation"
+title: "gFormulaMI - G-formula for Causal Inference via Multiple Imputation"
 output: rmarkdown::html_vignette
 author: "Jonathan Bartlett"
 vignette: >
