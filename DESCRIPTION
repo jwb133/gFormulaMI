@@ -5,7 +5,8 @@ Authors@R:
     c(person("Jonathan", "Bartlett", , "jonathan.bartlett1@lshtm.ac.uk", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-7117-0195")),
            person("Camila", "Olarte Parra", email = "camila.olarte-parra@lshtm.ac.uk", role = "ctb",
-           comment = c(ORCID = "0000-0003-0263-4392")))
+           comment = c(ORCID = "0000-0003-0263-4392")),
+           person("Erik", "van Zwet", email = "e.w.van_zwet@lumc.nl", role = "ctb"))
 Description: Implements the G-Formula method for causal inference with time-varying treatments and
   confounders using Bayesian multiple imputation methods. It creates multiple synthetic imputed
   datasets under treatment regimes of interest using the mice package. These can then be analysed
