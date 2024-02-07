@@ -51,6 +51,8 @@
 #' @param predictorMatrix An optional predictor matrix to specify which variables to use
 #' as predictors in the imputation models. The default is to impute sequentially, i.e. impute
 #' using all variables to the left of the variable being imputed as covariates
+#' @param missingDataCheck TRUE/FALSE indicating whether `gFormulaMI` checks, when
+#' passed a regular data frame, whether there any missing values.
 #'
 #' @returns an S3 object of class mids (multiply imputed dataset)
 #'
@@ -78,7 +80,8 @@
 #'
 gFormulaImpute <- function(data, M=50, trtVars, trtRegimes,
                            nSim=NULL, micePrintFlag=FALSE,silent=FALSE,
-                           method=NULL,predictorMatrix=NULL) {
+                           method=NULL,predictorMatrix=NULL,
+                           missingDataCheck=TRUE) {
 
   if (inherits(data, "mids")) {
     missingData <- TRUE
@@ -98,9 +101,11 @@ gFormulaImpute <- function(data, M=50, trtVars, trtRegimes,
     if (silent==FALSE) {
       print("Input data is a regular data frame.")
     }
-    #check there are no missing values
-    if (sum(is.na(data))>0) {
-      stop("Missing values detected - please multiply impute these and pass a mids type object as input.")
+    #check there are no missing values, unless user has turned off this check
+    if (missingDataCheck==TRUE) {
+      if (sum(is.na(data))>0) {
+        stop("Missing values detected - please multiply impute these and pass a mids type object as input.")
+      }
     }
   } else {
     stop("Input dataset should either be a data frame or a mids object created by mice.")
