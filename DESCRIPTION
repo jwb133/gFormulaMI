@@ -4,7 +4,7 @@ Version: 1.0.1
 Authors@R: 
     c(person("Jonathan", "Bartlett", email = "jonathan.bartlett1@lshtm.ac.uk", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-7117-0195")),
-           person("Camila", "Olarte Parra", email = "camila.olarte-parra@lshtm.ac.uk", role = "ctb",
+           person("Camila", "Olarte Parra", email = "camila.olarte.parra@ki.se", role = "ctb",
            comment = c(ORCID = "0000-0003-0263-4392")),
            person("Erik", "van Zwet", email = "e.w.van_zwet@lumc.nl", role = "ctb"))
 Description: Implements the G-Formula method for causal inference with time-varying treatments and
