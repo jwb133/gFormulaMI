@@ -1,3 +1,7 @@
-Version 1.0.1 updating Camila's email and reference to (now published) paper.
+# gFormula 1.0.1
 
-Version 1.0.0 first release on CRAN.
+Updating Camila's email and reference to (now published) paper.
+
+# gFormula 1.0.0
+
+First release on CRAN.
