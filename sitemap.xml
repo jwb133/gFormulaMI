@@ -1,33 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://jwb133.github.io/gFormulaMI/404.html</loc>
-  </url>
-  <url>
-    <loc>https://jwb133.github.io/gFormulaMI/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://jwb133.github.io/gFormulaMI/articles/gFormulaMI.html</loc>
-  </url>
-  <url>
-    <loc>https://jwb133.github.io/gFormulaMI/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://jwb133.github.io/gFormulaMI/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://jwb133.github.io/gFormulaMI/index.html</loc>
-  </url>
-  <url>
-    <loc>https://jwb133.github.io/gFormulaMI/reference/gFormulaImpute.html</loc>
-  </url>
-  <url>
-    <loc>https://jwb133.github.io/gFormulaMI/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://jwb133.github.io/gFormulaMI/reference/simDataFullyObs.html</loc>
-  </url>
-  <url>
-    <loc>https://jwb133.github.io/gFormulaMI/reference/syntheticPool.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://jwb133.github.io/gFormulaMI/404.html</loc></url>
+<url><loc>https://jwb133.github.io/gFormulaMI/LICENSE.html</loc></url>
+<url><loc>https://jwb133.github.io/gFormulaMI/articles/gFormulaMI.html</loc></url>
+<url><loc>https://jwb133.github.io/gFormulaMI/articles/index.html</loc></url>
+<url><loc>https://jwb133.github.io/gFormulaMI/authors.html</loc></url>
+<url><loc>https://jwb133.github.io/gFormulaMI/index.html</loc></url>
+<url><loc>https://jwb133.github.io/gFormulaMI/news/index.html</loc></url>
+<url><loc>https://jwb133.github.io/gFormulaMI/reference/gFormulaImpute.html</loc></url>
+<url><loc>https://jwb133.github.io/gFormulaMI/reference/index.html</loc></url>
+<url><loc>https://jwb133.github.io/gFormulaMI/reference/simDataFullyObs.html</loc></url>
+<url><loc>https://jwb133.github.io/gFormulaMI/reference/syntheticPool.html</loc></url>
 </urlset>
+
