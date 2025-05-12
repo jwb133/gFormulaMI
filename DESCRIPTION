@@ -9,7 +9,7 @@ Authors@R:
            person("Erik", "van Zwet", email = "e.w.van_zwet@lumc.nl", role = "ctb"))
 Description: Implements the G-Formula method for causal inference with time-varying treatments and
   confounders using Bayesian multiple imputation methods, as described by
-  Bartlett, Olarte Parra and Daniel (2023) <arXiv:2301.12026>. It creates multiple synthetic imputed
+  Bartlett et al (2025) <doi:10.1177/09622802251316971>. It creates multiple synthetic imputed
   datasets under treatment regimes of interest using the 'mice' package. These can then be analysed
   using rules developed for analysing multiple synthetic datasets.
 License: GPL (>= 3)
@@ -17,7 +17,7 @@ Encoding: UTF-8
 Imports:
   mice
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Suggests: 
     knitr,
     rmarkdown,

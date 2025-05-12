@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-In this vignette we introduce the functionality of the `gFormulaMI`. The package implements an approach to constructing a G-formula estimator using multiple imputation methods and software, as described by [Bartlett et al (2023)](https://arxiv.org/abs/2301.12026).
+In this vignette we introduce the functionality of the `gFormulaMI`. The package implements an approach to constructing a G-formula estimator using multiple imputation methods and software, as described by [Bartlett et al (2025)](https://doi.org/10.1177/09622802251316971).
 
 First we use the simulated dataset provided in the package to demonstrate how to impute potential outcomes using `gFormulaImpute`. We then show how the resulting imputed datasets can be analysed using the `syntheticPool` function. Lastly, we illustrate how the functions can be used when the dataset has missing values to begin with (i.e. regular missing data).
 
@@ -100,7 +100,7 @@ Next, we impute the `simDataMissing` data frame using the `mice` function:
 ```{r}
 simDataMissingImps <- mice::mice(simDataMissing,m=10,printFlag=FALSE)
 ```
-In a real substantive analysis we should take more care to think about how we specify the imputation models. For more discussion of this point, see [Bartlett et al (2023)](https://arxiv.org/abs/2301.12026). In particular, note that the default behaviour of the `mice` function is to impute numeric variables using the predictive mean matching method, rather than normal linear regression (as in the `gFormulaImpute` function).
+In a real substantive analysis we should take more care to think about how we specify the imputation models. For more discussion of this point, see [Bartlett et al (2025)](https://doi.org/10.1177/09622802251316971). In particular, note that the default behaviour of the `mice` function is to impute numeric variables using the predictive mean matching method, rather than normal linear regression (as in the `gFormulaImpute` function).
 
 We can now pass our multiply imputed datasets to `gFormulaImpute` to create the synthetic imputations as before, but this time let's try and generate 20 synthetic imputated datasets:
 ```{r}
@@ -112,7 +112,6 @@ The output looks much the same as the first time we called `gFormulaImpute`, apa
 
 # References
 
-Bartlett JW, Olarte Parra C, Daniel RM. G-formula for causal inference
-via multiple imputation. 2023 [arXiv 2301.12026](https://arxiv.org/abs/2301.12026)
+Bartlett, J.W., Olarte Parra, C., Granger, E., Keogh, R.H., van Zwet, E.W. and Daniel, R.M., 2025. G-formula with multiple imputation for causal inference with incomplete data. Statistical Methods in Medical Research.
 
-Raghunathan TE, Reiter JP, Rubin DB. 2003. Multiple imputation for statistical disclosure limitation. Journal of Official Statistics, 19(1), p.1-16.
+Raghunathan, T. E., Reiter, J. P., & Rubin, D. B. (2003). Multiple imputation for statistical disclosure limitation. Journal of Official Statistics, 19(1), 1.

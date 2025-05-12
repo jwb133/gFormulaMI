@@ -5,7 +5,7 @@
 #'
 #' `gFormulaImpute` creates multiple imputed synthetic datasets of longitudinal histories under
 #' specified treatment regimes of interest, based on the G-formula, as described in
-#' \href{https://arxiv.org/abs/2301.12026}{Bartlett et al 2023}. Specifically, to
+#' \href{https://doi.org/10.1177/09622802251316971}{Bartlett et al 2025}. Specifically, to
 #' the observed data frame, an additional `nSim` rows are added in which all variables are set to
 #' missing, except the time-varying treatment variables. The latter are set to the values
 #' as specified in the `trtRegimes` argument. If multiple treatment regimes are specified,
@@ -58,8 +58,9 @@
 #'
 #' @author Jonathan Bartlett \email{jonathan.bartlett1@@lshtm.ac.uk}
 #'
-#' @references Bartlett JW, Olarte Parra C, Daniel RM. G-formula for causal inference
-#' via multiple imputation. 2023 \url{https://arxiv.org/abs/2301.12026}
+#' @references Bartlett JW, Olarte Parra C, Granger E, Keogh RH., van Zwet EW
+#' and Daniel RM, 2025. G-formula with multiple imputation for causal inference
+#' with incomplete data. Statistical Methods in Medical Research.
 #'
 #' Raghunathan TE, Reiter JP, Rubin DB. 2003. Multiple imputation for statistical
 #'  disclosure limitation. Journal of Official Statistics, 19(1), p.1-16.
