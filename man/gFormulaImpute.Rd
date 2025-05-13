@@ -56,8 +56,8 @@ specified treatment regimes of interest, based on the G-formula.
 }
 \details{
 \code{gFormulaImpute} creates multiple imputed synthetic datasets of longitudinal histories under
-specified treatment regimes of interest, based on the G-formula, as described in
-\doi{10.1177/09622802251316971}{Bartlett et al 2025}. Specifically, to
+specified treatment regimes of interest, based on the G-formula, as described by Bartlett et al (2025)
+\doi{10.1177/09622802251316971}. Specifically, to
 the observed data frame, an additional \code{nSim} rows are added in which all variables are set to
 missing, except the time-varying treatment variables. The latter are set to the values
 as specified in the \code{trtRegimes} argument. If multiple treatment regimes are specified,

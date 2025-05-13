@@ -1,5 +1,7 @@
+## Test environments
+* local Mac install R 4.5.0
+* Winbuilder R version 4.5.0 (2025-04-11 ucrt)
+* Winbuilder R Under development (unstable) (2025-05-11 r88197 ucrt)
+
 ## R CMD check results
-
-0 errors | 0 warnings | 1 note
-
-* 1 note about it being a new submission and 'confounders' possibly being misspelt (it isn't).
+All ok except for a note about whether 'et al' is misspelled in DESCRIPTION.
