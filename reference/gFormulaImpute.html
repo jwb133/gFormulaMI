@@ -116,9 +116,9 @@ passed a regular data frame, whether there any missing values.</p></dd>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p><code>gFormulaImpute</code> creates multiple imputed synthetic datasets of longitudinal histories under
-specified treatment regimes of interest, based on the G-formula, as described in
+specified treatment regimes of interest, based on the G-formula, as described by Bartlett et al (2025)
 <a href="https://doi.org/10.1177/09622802251316971" class="external-link">doi:10.1177/09622802251316971</a>
-Bartlett et al 2025. Specifically, to
+. Specifically, to
 the observed data frame, an additional <code>nSim</code> rows are added in which all variables are set to
 missing, except the time-varying treatment variables. The latter are set to the values
 as specified in the <code>trtRegimes</code> argument. If multiple treatment regimes are specified,

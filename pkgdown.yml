@@ -3,7 +3,7 @@ pkgdown: 2.1.2
 pkgdown_sha: ~
 articles:
   gFormulaMI: gFormulaMI.html
-last_built: 2025-05-13T08:01Z
+last_built: 2025-05-13T08:57Z
 urls:
   reference: https://jwb133.github.io/gFormulaMI/reference
   article: https://jwb133.github.io/gFormulaMI/articles
