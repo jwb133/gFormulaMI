@@ -44,7 +44,9 @@
 #' @param micePrintFlag TRUE/FALSE specifying whether the output from the call(s) to mice
 #' should be printed
 #' @param silent TRUE/FALSE indicating whether to print output to console (FALSE) or not (TRUE)
-#' @param method An optional method argument to pass to mice. If not specified, the default
+#' @param method An optional method argument to pass to mice. If specified, this should be
+#' a named vector of methods, indicating which imputation method to use for each
+#' time-varying confounder variable and final outcome. If not specified, the default
 #' is to impute continuous variables using normal linear regression (norm), binary variables using
 #' logistic regression (logreg), polytomous regression for unordered factors and
 #' proportional odds model for ordered factors
@@ -191,7 +193,7 @@ gFormulaImpute <- function(data, M=50, trtVars, trtRegimes,
       method <- mice::make.method(data=inputData,defaultMethod = c("norm", "logreg", "polyreg","polr"))
     } else {
       #add on an empty imputation method for the new variable regime
-      method <- c(method,"")
+      method <- c(method,regime="")
     }
 
     if (is.null(predictorMatrix)) {
@@ -241,7 +243,7 @@ gFormulaImpute <- function(data, M=50, trtVars, trtRegimes,
           method <- mice::make.method(data=inputData,defaultMethod = c("norm", "logreg", "polyreg","polr"))
         } else {
           #add on an empty imputation method for the new variable regime
-          method <- c(method,"")
+          method <- c(method,regime="")
         }
         if (is.null(predictorMatrix)) {
           predictorMatrix <- predMat

@@ -79,18 +79,22 @@ test_that("Catching mismatch in treatment variables", {
 test_that("gFormulaImpute runs when manually specifying method vector", {
   expect_error({
     set.seed(7626)
+    myMethod <- c("norm","", "norm","","norm", "", "norm")
+    names(myMethod) <- colnames(simDataFullyObs)
     impRes <- gFormulaImpute(data=simDataFullyObs,M=10,trtVars=c("a0","a1","a2"),
                              trtRegimes=c(0,0,0),
-                             method=c("norm","", "norm","","norm", "", "norm"))
+                             method=myMethod)
   }, NA)
 })
 
 test_that("When passed custom method, returned object method matches", {
   expect_equal({
     set.seed(7626)
+    myMethod <- c("pmm","", "norm","","norm", "", "norm")
+    names(myMethod) <- colnames(simDataFullyObs)
     impRes <- gFormulaImpute(data=simDataFullyObs,M=10,trtVars=c("a0","a1","a2"),
                              trtRegimes=c(0,0,0),
-                             method=c("pmm","", "norm","","norm", "", "norm"))
+                             method=myMethod)
     as.vector(impRes$method)
     #note value to compare against below includes extra """ for the added variable regime
   }, c("pmm","", "norm","","norm", "", "norm", ""))
@@ -136,9 +140,11 @@ test_that("Check 95% confidence interval includes true value,
 test_that("When passed custom method, returned object method matches (passing mids object)", {
   expect_equal({
     set.seed(7626)
+    myMethod <- c("pmm","", "norm","","norm", "", "norm")
+    names(myMethod) <- colnames(simDataFullyObs)
     impRes <- gFormulaImpute(data=simDataMisImps,M=50,trtVars=c("a0","a1","a2"),
                              trtRegimes=list(c(0,0,0),c(1,1,1)),
-                             method=c("pmm","", "norm","","norm", "", "norm"))
+                             method=myMethod)
     as.vector(impRes$method)
     #note value to compare against below includes extra """ for the added variable regime
   },c("pmm","", "norm","","norm", "", "norm", ""))

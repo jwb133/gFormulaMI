@@ -35,7 +35,9 @@ should be printed}
 
 \item{silent}{TRUE/FALSE indicating whether to print output to console (FALSE) or not (TRUE)}
 
-\item{method}{An optional method argument to pass to mice. If not specified, the default
+\item{method}{An optional method argument to pass to mice. If specified, this should be
+a named vector of methods, indicating which imputation method to use for each
+time-varying confounder variable and final outcome. If not specified, the default
 is to impute continuous variables using normal linear regression (norm), binary variables using
 logistic regression (logreg), polytomous regression for unordered factors and
 proportional odds model for ordered factors}
