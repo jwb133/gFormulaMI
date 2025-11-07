@@ -62,7 +62,7 @@
 #'
 #' @references Bartlett JW, Olarte Parra C, Granger E, Keogh RH., van Zwet EW
 #' and Daniel RM, 2025. G-formula with multiple imputation for causal inference
-#' with incomplete data. Statistical Methods in Medical Research.
+#' with incomplete data. Statistical Methods in Medical Research, 34(6), p1130-1143.
 #'
 #' Raghunathan TE, Reiter JP, Rubin DB. 2003. Multiple imputation for statistical
 #'  disclosure limitation. Journal of Official Statistics, 19(1), p.1-16.

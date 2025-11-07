@@ -1,3 +1,7 @@
+# gFormula 1.0.3
+
+Updating published paper reference.
+
 # gFormula 1.0.2
 
 Thanks to Martin Danka: when adding regime to method argument, give it a name, so as not to fall foul of new expectations of mice package. 
